@@ -1,5 +1,8 @@
-# xxl-job-admin-sdk
-使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
+# 项目介绍
+1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
+2. 配置了用户名密码之后，此模块会模拟登录请求admin来实现功能
+3. 想要通过代码往admin里面添加job等功能，只需要在springboot项目中引入此项目，配置关键参数，引入sdk类就可以了，其它什么都不用关心了
+
 下面是自动配置类，默认配置如下
 ```
 @Data

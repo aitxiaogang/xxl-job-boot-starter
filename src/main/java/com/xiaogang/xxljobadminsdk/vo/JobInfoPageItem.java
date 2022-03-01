@@ -14,7 +14,7 @@ public @Data class JobInfoPageItem {
 	private String executorRouteStrategy;
 	private int triggerStatus;
 	private String childJobId;
-	private int triggerNextTime;
+	private long triggerNextTime;
 	private String updateTime;
 	private int jobGroup;
 	private String glueRemark;

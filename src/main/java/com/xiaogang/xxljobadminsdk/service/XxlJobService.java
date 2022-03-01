@@ -44,6 +44,16 @@ public interface XxlJobService {
      */
     void remove(int id);
 
+    void remove(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
+
+    void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
+
+    /**
+     * 停止运行中的任务并删除
+     */
+    void cancel(int jobGroup, String jobDesc, String executorHandler, String author);
+
+    void cancelAll(int jobGroup, String jobDesc, String executorHandler, String author);
     /**
      * start job
      *

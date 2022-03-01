@@ -1,5 +1,6 @@
 package com.xiaogang.xxljobadminsdk.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -10,8 +11,10 @@ import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
+import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +78,79 @@ public class XxlJobServiceImpl implements XxlJobService {
         Map<String,Object> map = new HashMap<>();
         map.put("id",id);
         requestXxlJobAdmin(httpRequest, map,new TypeReference<ReturnT<String>>(){});
+    }
+
+    @Override
+    public void remove(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(0, 1, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return;
+        }
+        for (JobInfoPageItem item : data) {
+            this.remove(item.getId());
+        }
+    }
+
+    @Override
+    public void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(0, 10, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return;
+        }
+
+        for (JobInfoPageItem item : data) {
+            this.remove(item.getId());
+        }
+
+        int i = 1;
+        while (data.size() > 10) {
+            data = jobInfoPageResult.getData();
+            if (CollUtil.isEmpty(data)) {
+                return;
+            }
+            for (JobInfoPageItem item : data) {
+                this.remove(item.getId());
+            }
+            jobInfoPageResult = this.pageList(i++, 10, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+        }
+    }
+
+    @Override
+    public void cancel(int jobGroup, String jobDesc, String executorHandler, String author) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(0, 1, jobGroup, 1, jobDesc, executorHandler, author);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return;
+        }
+        for (JobInfoPageItem item : data) {
+            this.stop(item.getId());
+        }
+    }
+
+    @Override
+    public void cancelAll(int jobGroup, String jobDesc, String executorHandler, String author) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(0, 10, jobGroup, 1, jobDesc, executorHandler, author);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return;
+        }
+        for (JobInfoPageItem item : data) {
+            this.remove(item.getId());
+        }
+
+        int i = 1;
+        while (data.size() > 10) {
+            data = jobInfoPageResult.getData();
+            if (CollUtil.isEmpty(data)) {
+                return;
+            }
+            for (JobInfoPageItem item : data) {
+                this.remove(item.getId());
+            }
+            jobInfoPageResult = this.pageList(i++, 10, jobGroup, 1, jobDesc, executorHandler, author);
+        }
     }
 
     @Override

@@ -20,9 +20,11 @@ public class XxlJobAdminProperties {
 ```
 # 使用方法
 ```
+<dependency>
     <groupId>com.lxgnb</groupId>
     <artifactId>xxl-job-admin-sdk-boot-starter</artifactId>
     <version>2.3.0-jobinfo-job</version>
+</dependency>
 ```
 1. 下载本项目install到本地maven仓库（中央仓库没有上传）
 2. 其它需要通过代码添加job的spring boot项目加入本项目的依赖

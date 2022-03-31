@@ -26,9 +26,8 @@ public class XxlJobAdminProperties {
     <version>2.3.0-jobinfo-job</version>
 </dependency>
 ```
-1. 下载本项目install到本地maven仓库（中央仓库没有上传）
-2. 其它需要通过代码添加job的spring boot项目加入本项目的依赖
-3. 配置参数如下
+1. pom文件中添加上面的依赖坐标（已上传到maven中央仓库）
+2. 添加配置项，配置参数如下
 4. <img width="496" alt="image" src="https://user-images.githubusercontent.com/18614347/155742668-e078698c-efa7-48f9-b834-0effa19de44e.png">
 5. 接下来注入关键的类，使用XxlJobService来控制job的crud
 6. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">

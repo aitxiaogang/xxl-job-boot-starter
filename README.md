@@ -1,4 +1,4 @@
-# 项目介绍
+# 项目介绍（已上传maven中央仓库）
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
 2. 项目使用的xxl-job-admin版本为2.3.0
 3. 此项目版本号对应xxl-job-admin版本号

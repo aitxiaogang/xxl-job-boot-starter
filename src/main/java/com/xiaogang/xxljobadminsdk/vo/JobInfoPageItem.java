@@ -2,7 +2,11 @@ package com.xiaogang.xxljobadminsdk.vo;
 
 import lombok.Data;
 
-public @Data class JobInfoPageItem {
+import java.io.Serializable;
+
+public @Data class JobInfoPageItem implements Serializable {
+	private static final long serialVersionUID = -1842102864350831173L;
+
 	private int triggerLastTime;
 	private String alarmEmail;
 	private String glueUpdatetime;

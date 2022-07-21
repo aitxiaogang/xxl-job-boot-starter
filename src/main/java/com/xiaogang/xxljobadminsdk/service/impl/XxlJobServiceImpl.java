@@ -7,14 +7,18 @@ import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.xiaogang.xxljobadminsdk.config.XxlJobAdminProperties;
+import com.xiaogang.xxljobadminsdk.constants.*;
 import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
+import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
+import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
+import org.springframework.beans.BeanUtils;
 
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +59,51 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
-    public String add(XxlJobInfo jobInfo) {
+    public Integer add(XxlJobInfo jobInfo) {
         HttpRequest httpRequest = postHttpRequest(jobAddPath);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
         ReturnT<String> returnT = requestXxlJobAdmin(httpRequest, jsonObject, new TypeReference<ReturnT<String>>() {
         });
-        return returnT.getContent();
+        return Integer.valueOf(returnT.getContent());
     }
+
+    @Override
+    public Integer add(XxlJobInfoAddParam addParam) {
+        DefaultXxlJobAddParam defaultXxlJobAddParam = new DefaultXxlJobAddParam();
+        BeanUtils.copyProperties(addParam,defaultXxlJobAddParam);
+        Integer jobId = this.add(defaultXxlJobAddParam);
+        return jobId;
+    }
+
+    @Override
+    public Integer add(DefaultXxlJobAddParam defaultXxlJobAddParam) {
+        XxlJobInfo jobInfo = new XxlJobInfo();
+        ScheduleTypeEnum scheduleType = defaultXxlJobAddParam.getScheduleType();
+        if (scheduleType != null) {
+            jobInfo.setScheduleType(scheduleType.name());
+        }
+        MisfireStrategyEnum misfireStrategy = defaultXxlJobAddParam.getMisfireStrategy();
+        if (misfireStrategy != null) {
+            jobInfo.setMisfireStrategy(misfireStrategy.name());
+        }
+        ExecutorRouteStrategyEnum executorRouteStrategy = defaultXxlJobAddParam.getExecutorRouteStrategy();
+        if (executorRouteStrategy != null) {
+            jobInfo.setExecutorRouteStrategy(executorRouteStrategy.name());
+        }
+        ExecutorBlockStrategyEnum executorBlockStrategy = defaultXxlJobAddParam.getExecutorBlockStrategy();
+        if (executorBlockStrategy != null) {
+            jobInfo.setExecutorBlockStrategy(executorBlockStrategy.name());
+        }
+        GlueTypeEnum glueType = defaultXxlJobAddParam.getGlueType();
+        if (glueType != null) {
+            jobInfo.setGlueType(glueType.name());
+        }
+
+        BeanUtils.copyProperties(defaultXxlJobAddParam,jobInfo);
+        Integer jobId = this.add(jobInfo);
+        return jobId;
+    }
+
 
     @Override
     public void update(XxlJobInfo jobInfo) {

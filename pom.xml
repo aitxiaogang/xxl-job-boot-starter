@@ -3,10 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lxgnb</groupId>
-    <artifactId>xxl-job-admin-sdk-boot-starter</artifactId>
-    <version>2.3.0-jobinfo-job</version>
+    <artifactId>xxl-job-boot-starter</artifactId>
+    <version>2.3.0-jobinfo-executor</version>
     <name>xxl-job-admin-sdk</name>
-    <description>xxl-job-admin-sdk</description>
+    <description>xxl-job-boot-starter</description>
+    <url>https://github.com/aitxiaogang/xxl-job-boot-starter.git</url>
+
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -35,7 +37,33 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.79</version>
         </dependency>
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
     </dependencies>
+
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git://github.com/aitxiaogang/xxl-job-admin-sdk-boot-starter.git</connection>
+        <developerConnection>scm:git:ssh://github.com/aitxiaogang/xxl-job-admin-sdk-boot-starter.git</developerConnection>
+        <url>https://github.com/aitxiaogang/xxl-job-admin-sdk-boot-starter.git</url>
+    </scm>
+    <!-- 开发者信息 -->
+    <developers>
+        <developer>
+            <name>lixiaogang</name>
+            <email>aitxiaogang@163.com</email>
+            <url>https://github.com/aitxiaogang</url>
+        </developer>
+    </developers>
 
     <dependencyManagement>
         <dependencies>
@@ -79,44 +107,70 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>deploymentRepo</id>
-            <url>http://182.254.141.241:9999/repository/xg_snapshot/</url>
-        </snapshotRepository>
-        <repository>
-            <id>deploymentRepo</id>
-            <url>http://182.254.141.241:9999/repository/xg_release/</url>
-        </repository>
-    </distributionManagement>
+    <profiles>
+        <profile>
+            <id>ossrh</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- 要生成Javadoc和Source jar文件，您必须配置javadoc和源Maven插件 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--  必须配置GPG插件用于使用以下配置对组件进行签名 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
-
-    <repositories>
-
-        <repository>
-            <id>deploymentRepo</id>
-            <name>Nexus Repository</name>
-            <url>http://182.254.141.241:9999/repository/xg_public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>deploymentRepo1</id>
-            <name>Nexus Repository</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-    </repositories>
 
 </project>

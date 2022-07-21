@@ -1,10 +1,10 @@
-# 更新说明（已上传maven中央仓库）
+# 更新说明
 1. 2.3.0-jobinfo-executor版本集成了xxl-job-core，并且默认配置XxlJobSpringExecutor交给Spring管理，省去了xxl-job的配置，实现了更加快速的集成xxl-job到项目中。使用只需要两步，1.加本项目依赖，2.application.yml配置文件中加入自定义配置就完成了集成。
 2. 提供更多添加job的方法，使用更少参数添加job，降低方法的调用复杂度
 3. 添加成功job之后返回int类型的任务id数据，省去转换的过程
 
 
-# 项目介绍
+# 项目介绍（已上传maven中央仓库）
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
 2. 项目使用的xxl-job-admin版本为2.3.0
 3. 此项目版本号对应xxl-job-admin版本号

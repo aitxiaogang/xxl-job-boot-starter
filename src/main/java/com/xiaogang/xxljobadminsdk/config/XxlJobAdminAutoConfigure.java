@@ -1,5 +1,6 @@
 package com.xiaogang.xxljobadminsdk.config;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
@@ -7,9 +8,8 @@ import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
 import com.xiaogang.xxljobadminsdk.service.impl.XxlJobServiceImpl;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +23,46 @@ import java.util.Map;
 @ConditionalOnClass(XxlJobService.class)
 @EnableConfigurationProperties(XxlJobAdminProperties.class)
 public class XxlJobAdminAutoConfigure {
+
+    @Bean
+    @ConditionalOnProperty(prefix = "xxl.job.sdk",value = "enable",havingValue = "true")
+    public XxlJobSpringExecutor xxlJobExecutor(XxlJobAdminProperties xxlJobAdminProperties) {
+        XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
+        String adminUrl = xxlJobAdminProperties.getAdminUrl();
+        Assert.isTrue(adminUrl != null);
+        xxlJobSpringExecutor.setAdminAddresses(adminUrl);
+
+        String appname = xxlJobAdminProperties.getAppname();
+        Assert.isTrue(appname != null);
+        xxlJobSpringExecutor.setAppname(appname);
+
+        String address = xxlJobAdminProperties.getAddress();
+        if (address != null) {
+            xxlJobSpringExecutor.setAddress(address);
+        }
+        String ip = xxlJobAdminProperties.getIp();
+        if (ip != null) {
+            xxlJobSpringExecutor.setIp(ip);
+        }
+        Integer port = xxlJobAdminProperties.getPort();
+        if (port != null) {
+            xxlJobSpringExecutor.setPort(port);
+        }
+        String accessToken = xxlJobAdminProperties.getAccessToken();
+        if (accessToken != null) {
+            xxlJobSpringExecutor.setAccessToken(accessToken);
+        }
+        String logPath = xxlJobAdminProperties.getLogPath();
+        if (logPath != null) {
+            xxlJobSpringExecutor.setLogPath(logPath);
+        }
+        Integer logRetentionDays = xxlJobAdminProperties.getLogRetentionDays();
+        if (logRetentionDays != null) {
+            xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
+        }
+
+        return xxlJobSpringExecutor;
+    }
 
     @Bean
     @ConditionalOnProperty(prefix = "xxl.job.sdk",value = "enable",havingValue = "true")

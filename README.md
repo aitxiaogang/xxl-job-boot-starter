@@ -60,7 +60,7 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 2. ![image](https://user-images.githubusercontent.com/18614347/180215693-a94d1d03-b960-46ee-9196-a52f4b5cad64.png)
 3. XxlJobInfo 这是参数最全的类，官方有哪些参数，这个类就有哪些字段
 4. XxlJobInfoAddParam 这个是必填参数，其它参数和在网页上添加任务的默认参数一样
-5. DefaultXxlJobAddParam 这个和 XxlJobInfoAddParam差不多，却别在于默认参数这个类也有字段，可以修改，XxlJobInfoAddParam就只有必填参数，不能修改默认参数
+5. DefaultXxlJobAddParam 这个和 XxlJobInfoAddParam差不多，区别在于默认参数这个类也有字段，可以修改，XxlJobInfoAddParam就只有必填参数，不能修改默认参数
 6. 之所以提供三个方法来添加任务是为了方便添加任务，不用每个参数都去设置
 
 

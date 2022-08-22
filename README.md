@@ -66,3 +66,9 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 
 使用方法就是这样，现在只接入了JOB的crud，后续看项目情况也许会接入其它接口。
 如果大家有什么问题，欢迎大家提出来。这个项目写的很粗糙，大家有什么意见和建议，非常欢迎大家来交流。谢谢
+
+
+## QQ群
+点击链接加入群聊【xxl-job-boot-starter】：https://jq.qq.com/?_wv=1027&k=7T9xX7XY
+群号：709425770
+

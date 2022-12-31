@@ -29,5 +29,4 @@ public class XxlJobAdminProperties {
     private Integer logRetentionDays = 30;
     private Integer jobGroupId;
 
-    private boolean enable = false;
 }

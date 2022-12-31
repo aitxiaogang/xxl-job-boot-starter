@@ -7,10 +7,9 @@ import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
 import com.xiaogang.xxljobadminsdk.service.impl.XxlJobServiceImpl;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,20 +19,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ConditionalOnClass(XxlJobService.class)
 @EnableConfigurationProperties(XxlJobAdminProperties.class)
 public class XxlJobAdminAutoConfigure {
 
+    private Logger logger = LoggerFactory.getLogger(XxlJobAdminAutoConfigure.class);
+
     @Bean
-    @ConditionalOnProperty(prefix = "xxl.job.sdk",value = "enable",havingValue = "true")
     public XxlJobService xxlJobService(HttpHeader loginHeader, XxlJobAdminProperties xxlJobAdminProperties) {
+        logger.info(">>>>>>>>>>> xxl-job config init. xxlJobService");
         XxlJobService xxlJobService = new XxlJobServiceImpl(loginHeader, xxlJobAdminProperties);
         return xxlJobService;
     }
 
     @Bean("loginHeader")
-    @ConditionalOnProperty(prefix = "xxl.job.sdk",value = "enable",havingValue = "true")
     public HttpHeader httpRequest(XxlJobAdminProperties xxlJobAdminProperties){
+        logger.info(">>>>>>>>>>> xxl-job config init. httpRequest");
         String adminUrl = xxlJobAdminProperties.getAdminUrl();
         String userName = xxlJobAdminProperties.getUserName();
         String password = xxlJobAdminProperties.getPassword();
@@ -66,4 +66,25 @@ public class XxlJobAdminAutoConfigure {
         return loginHeader;
     }
 
+    @Bean
+    public XxlJobSpringExecutor xxlJobExecutor(XxlJobAdminProperties xxlJobAdminProperties) {
+        logger.info(">>>>>>>>>>> xxl-job config init. XxlJobSpringExecutor");
+        XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
+        xxlJobSpringExecutor.setAdminAddresses(xxlJobAdminProperties.getAdminUrl());
+        xxlJobSpringExecutor.setAppname(xxlJobAdminProperties.getAppname());
+        xxlJobSpringExecutor.setAddress(xxlJobAdminProperties.getAddress());
+        xxlJobSpringExecutor.setIp(xxlJobAdminProperties.getIp());
+        xxlJobSpringExecutor.setPort(xxlJobAdminProperties.getPort());
+        xxlJobSpringExecutor.setAccessToken(xxlJobAdminProperties.getAccessToken());
+        String logPath = xxlJobAdminProperties.getLogPath();
+        if (logPath != null) {
+            xxlJobSpringExecutor.setLogPath(logPath);
+        }
+        Integer logRetentionDays = xxlJobAdminProperties.getLogRetentionDays();
+        if (logRetentionDays != null) {
+            xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
+        }
+
+        return xxlJobSpringExecutor;
+    }
 }

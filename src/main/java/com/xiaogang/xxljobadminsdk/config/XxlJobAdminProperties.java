@@ -2,9 +2,11 @@ package com.xiaogang.xxljobadminsdk.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 @Data
 @ConfigurationProperties(prefix = "xxl.job.sdk")
+@Configuration
 public class XxlJobAdminProperties {
     private String adminUrl = "http://localhost:8080/xxl-job-admin";
     private String userName = "admin";
@@ -24,7 +26,7 @@ public class XxlJobAdminProperties {
     //执行器运行日志文件存储磁盘路径 [选填] ：需要对该路径拥有读写权限；为空则使用默认路径；
     private String logPath;
     //执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
-    private Integer logRetentionDays;
+    private Integer logRetentionDays = 30;
     private Integer jobGroupId;
 
     private boolean enable = false;

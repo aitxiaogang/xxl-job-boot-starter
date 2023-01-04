@@ -7,11 +7,6 @@
 6. 请求xxl-job-admin添加返回结果添加debug日志，显示响应结果信息
 7. 合并重复的任务操作方法，简化调用步骤
 8. 部分代码优化，修改部分任务字段类型
-# 更新说明（已上传maven中央仓库）
-1. 2.3.0-jobinfo-executor版本集成了xxl-job-core，并且默认配置XxlJobSpringExecutor交给Spring管理，省去了xxl-job的配置，实现了更加快速的集成xxl-job到项目中。使用只需要两步，1.加本项目依赖，2.application.yml配置文件中加入自定义配置就完成了集成。
-2. 提供更多添加job的方法，使用更少参数添加job，降低方法的调用复杂度
-3. 添加成功job之后返回int类型的任务id数据，省去转换的过程
-
 
 # 项目介绍
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
@@ -55,7 +50,7 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 <dependency>
     <groupId>com.lxgnb</groupId>
     <artifactId>xxl-job-boot-starter</artifactId>
-    <version>2.3.0-jobinfo-executor</version>
+    <version>2.3.0-jobinfo-executor-1</version>
 </dependency>
 ```
 1. pom文件中添加上面的依赖坐标（已上传到maven中央仓库）

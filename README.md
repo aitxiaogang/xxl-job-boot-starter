@@ -55,9 +55,9 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 ```
 1. pom文件中添加上面的依赖坐标（已上传到maven中央仓库）
 2. 添加配置项，配置参数如下
-3. ![image](https://user-images.githubusercontent.com/18614347/180215271-7979d1aa-61dc-4dbe-91dc-0530f0da497f.png)
-4. 接下来注入关键的类，使用XxlJobService来控制job的crud
-5. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">
+3. ![image](https://user-images.githubusercontent.com/18614347/210478721-f83f202d-8d00-4c2b-a6c3-c8e61fd87872.png)
+5. 接下来注入关键的类，使用XxlJobService来控制job的crud
+6. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">
 
 ## 添加job
 1. 添加任务有三个方法，对应的参数个数不一样，截图如下

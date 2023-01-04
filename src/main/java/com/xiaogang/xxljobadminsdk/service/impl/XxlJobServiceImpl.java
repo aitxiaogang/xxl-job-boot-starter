@@ -9,6 +9,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.xiaogang.xxljobadminsdk.config.XxlJobAdminProperties;
 import com.xiaogang.xxljobadminsdk.constants.*;
 import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
+import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
@@ -16,13 +17,14 @@ import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class XxlJobServiceImpl implements XxlJobService {
 
     private HttpHeader loginHeader;
@@ -38,24 +40,38 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
-    public JobInfoPageResult pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
+    public JobInfoPageResult pageList(JobQuery jobQuery) {
+        this.validQueryParam(jobQuery);
         HttpRequest httpRequest = this.getHttpRequest(jobPageListPath);
         Map<String, Object> paramMap = new HashMap();
-        paramMap.put("start",start);
-        paramMap.put("length",length);
-        paramMap.put("jobGroup",jobGroup);
-        paramMap.put("triggerStatus",triggerStatus);
-        paramMap.put("jobDesc",jobDesc);
-        paramMap.put("executorHandler",executorHandler);
-        paramMap.put("author",author);
+        paramMap.put("start",jobQuery.getStart());
+        paramMap.put("length",jobQuery.getLength());
+        paramMap.put("jobGroup",jobQuery.getJobGroup());
+        TriggerStatusEnum triggerStatus = jobQuery.getTriggerStatus();
+        paramMap.put("triggerStatus", triggerStatus.getStatus());
+        paramMap.put("jobDesc",jobQuery.getJobDesc());
+        paramMap.put("executorHandler",jobQuery.getExecutorHandler());
+        paramMap.put("author",jobQuery.getAuthor());
 
         HttpResponse response = httpRequest.form(paramMap).timeout(timeout).execute();
         int status = response.getStatus();
         String body = response.body();
-        Assert.isTrue(status == 200);
+        log.debug("status:{},body:{}",status,body);
+        Assert.isTrue(status == 200,body);
         JobInfoPageResult jobInfoPageResult = JSON.parseObject(body, JobInfoPageResult.class);
 
         return jobInfoPageResult;
+    }
+
+    private void validQueryParam(JobQuery jobQuery){
+        int jobGroup = jobQuery.getJobGroup();
+        Assert.notNull(jobGroup,"jobGroup不能为null");
+        TriggerStatusEnum triggerStatus = jobQuery.getTriggerStatus();
+        Assert.notNull(triggerStatus,"triggerStatus不能为null");
+        int start = jobQuery.getStart();
+        Assert.notNull(start,"分页参数start不能为null");
+        int length = jobQuery.getLength();
+        Assert.notNull(length,"分页参数length不能为null");
     }
 
     @Override
@@ -100,10 +116,21 @@ public class XxlJobServiceImpl implements XxlJobService {
         }
 
         BeanUtils.copyProperties(defaultXxlJobAddParam,jobInfo);
+
+        this.validAddJobParam(jobInfo);
         Integer jobId = this.add(jobInfo);
         return jobId;
     }
 
+    private void validAddJobParam(XxlJobInfo jobInfo){
+        Assert.notNull(jobInfo,"参数不能为null");
+        Assert.notNull(jobInfo.getJobGroup(),"jobGroup参数不能为null");
+        Assert.notNull(jobInfo.getJobDesc(),"jobDesc参数不能为null");
+        Assert.notNull(jobInfo.getAuthor(),"author参数不能为null");
+        Assert.notNull(jobInfo.getScheduleType(),"scheduleType参数不能为null");
+        Assert.notNull(jobInfo.getGlueType(),"glueType参数不能为null");
+        Assert.notNull(jobInfo.getExecutorHandler(),"executorHandler参数不能为null");
+    }
 
     @Override
     public void update(XxlJobInfo jobInfo) {
@@ -123,20 +150,8 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
-    public void remove(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
-        JobInfoPageResult jobInfoPageResult = this.pageList(0, 1, jobGroup, triggerStatus, jobDesc, executorHandler, author);
-        List<JobInfoPageItem> data = jobInfoPageResult.getData();
-        if (CollUtil.isEmpty(data)) {
-            return;
-        }
-        for (JobInfoPageItem item : data) {
-            this.remove(item.getId());
-        }
-    }
-
-    @Override
-    public void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
-        JobInfoPageResult jobInfoPageResult = this.pageList(0, 10, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+    public void remove(JobQuery jobQuery) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
         List<JobInfoPageItem> data = jobInfoPageResult.getData();
         if (CollUtil.isEmpty(data)) {
             return;
@@ -155,31 +170,21 @@ public class XxlJobServiceImpl implements XxlJobService {
             for (JobInfoPageItem item : data) {
                 this.remove(item.getId());
             }
-            jobInfoPageResult = this.pageList(i++, 10, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+            jobQuery.setStart(i++);
+            jobInfoPageResult = this.pageList(jobQuery);
         }
     }
 
     @Override
-    public void cancel(int jobGroup, String jobDesc, String executorHandler, String author) {
-        JobInfoPageResult jobInfoPageResult = this.pageList(0, 1, jobGroup, 1, jobDesc, executorHandler, author);
+    public void start(JobQuery jobQuery) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
         List<JobInfoPageItem> data = jobInfoPageResult.getData();
         if (CollUtil.isEmpty(data)) {
             return;
         }
-        for (JobInfoPageItem item : data) {
-            this.stop(item.getId());
-        }
-    }
 
-    @Override
-    public void cancelAll(int jobGroup, String jobDesc, String executorHandler, String author) {
-        JobInfoPageResult jobInfoPageResult = this.pageList(0, 10, jobGroup, 1, jobDesc, executorHandler, author);
-        List<JobInfoPageItem> data = jobInfoPageResult.getData();
-        if (CollUtil.isEmpty(data)) {
-            return;
-        }
         for (JobInfoPageItem item : data) {
-            this.remove(item.getId());
+            this.start(item.getId());
         }
 
         int i = 1;
@@ -189,10 +194,17 @@ public class XxlJobServiceImpl implements XxlJobService {
                 return;
             }
             for (JobInfoPageItem item : data) {
-                this.remove(item.getId());
+                this.start(item.getId());
             }
-            jobInfoPageResult = this.pageList(i++, 10, jobGroup, 1, jobDesc, executorHandler, author);
+            jobQuery.setStart(i++);
+            jobInfoPageResult = this.pageList(jobQuery);
         }
+    }
+
+    @Override
+    public void stopAndRemove(JobQuery jobGroup) {
+        this.stop(jobGroup);
+        this.remove(jobGroup);
     }
 
     @Override
@@ -211,6 +223,32 @@ public class XxlJobServiceImpl implements XxlJobService {
         Map<String,Object> map = new HashMap<>();
         map.put("id",id);
         requestXxlJobAdmin(httpRequest, map,new TypeReference<ReturnT<String>>(){});
+    }
+
+    @Override
+    public void stop(JobQuery jobQuery) {
+        JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return;
+        }
+
+        for (JobInfoPageItem item : data) {
+            this.stop(item.getId());
+        }
+
+        int i = 1;
+        while (data.size() > 10) {
+            data = jobInfoPageResult.getData();
+            if (CollUtil.isEmpty(data)) {
+                return;
+            }
+            for (JobInfoPageItem item : data) {
+                this.stop(item.getId());
+            }
+            jobQuery.setStart(i++);
+            jobInfoPageResult = this.pageList(jobQuery);
+        }
     }
 
     @Override
@@ -253,8 +291,12 @@ public class XxlJobServiceImpl implements XxlJobService {
         HttpResponse response = httpRequest.form(paramMap).timeout(timeout).execute();
         int status = response.getStatus();
         String body = response.body();
+        log.debug("status:{},body:{}",status,body);
         T returnT = JSON.parseObject(body, type);
-        Assert.isTrue(status == 200, returnT.getMsg());
+        Assert.isTrue(status == 200, body);
+        int code = returnT.getCode();
+        log.debug("returnT:{}",returnT);
+        Assert.isTrue(code == 200, returnT.getMsg());
         return returnT;
     }
 

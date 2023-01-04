@@ -1,5 +1,6 @@
 package com.xiaogang.xxljobadminsdk.service;
 
+import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
@@ -18,7 +19,7 @@ public interface XxlJobService {
     String jobPageListPath = "/jobinfo/pageList";
     String jobNextTriggerTimePath = "/jobinfo/nextTriggerTime";
 
-    JobInfoPageResult pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
+    JobInfoPageResult pageList(JobQuery jobQuery);
 
     /**
      * 包含添加job的所有参数
@@ -30,7 +31,7 @@ public interface XxlJobService {
 
     /**
      * 通过必要参数添加job，其它参数和通过网页添加job的默认参数一样
-     * @param addParam
+     * @param  addParam
      * @return
      */
     Integer add(XxlJobInfoAddParam addParam);
@@ -56,16 +57,19 @@ public interface XxlJobService {
      */
     void remove(int id);
 
-    void remove(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
+    /**
+     * 删除所有符合条件的任务
+     * @param jobQuery
+     */
+    void remove(JobQuery jobQuery);
 
-    void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
+    void start(JobQuery jobQuery);
 
     /**
      * 停止运行中的任务并删除
      */
-    void cancel(int jobGroup, String jobDesc, String executorHandler, String author);
+    void stopAndRemove(JobQuery jobQuery);
 
-    void cancelAll(int jobGroup, String jobDesc, String executorHandler, String author);
     /**
      * start job
      *
@@ -79,6 +83,8 @@ public interface XxlJobService {
      * @param id 任务id
      */
     void stop(int id);
+
+    void stop(JobQuery jobQuery);
 
     void triggerJob(int id, String executorParam, String addressList);
 

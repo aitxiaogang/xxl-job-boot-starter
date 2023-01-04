@@ -7,7 +7,7 @@ import java.io.Serializable;
 public @Data class JobInfoPageItem implements Serializable {
 	private static final long serialVersionUID = -1842102864350831173L;
 
-	private int triggerLastTime;
+	private Long triggerLastTime;
 	private String alarmEmail;
 	private String glueUpdatetime;
 	private String executorParam;
@@ -16,7 +16,7 @@ public @Data class JobInfoPageItem implements Serializable {
 	private String author;
 	private String scheduleConf;
 	private String executorRouteStrategy;
-	private int triggerStatus;
+	private Long triggerStatus;
 	private String childJobId;
 	private long triggerNextTime;
 	private String updateTime;

@@ -1,7 +1,10 @@
 package com.xiaogang.xxljobadminsdk.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
@@ -15,11 +18,13 @@ import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
+import com.xiaogang.xxljobadminsdk.utils.MyUtil;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +97,52 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
+    public Integer addJustExecuteOnceJob(String customId, Date triggerTime, String executorParam, String executorHandler) {
+        Date now = new Date();
+        boolean after = triggerTime.after(now);
+        Assert.isTrue(after,"任务执行时间必须大于当前时间");
+        XxlJobInfoAddParam addParam = new XxlJobInfoAddParam();
+        Integer jobGroupId = xxlJobAdminProperties.getJobGroupId();
+        addParam.setJobGroup(jobGroupId);
+        addParam.setJobDesc("none");
+        addParam.setAuthor(customId);
+        addParam.setScheduleType(ScheduleTypeEnum.CRON);
+
+        String cron = MyUtil.getCron(triggerTime);
+        addParam.setScheduleConf(cron);
+        addParam.setExecutorHandler(executorHandler);
+        addParam.setExecutorParam(executorParam);
+        Integer jobId = this.add(addParam);
+        return jobId;
+    }
+
+    @Override
+    public Integer getJobIdByCustomId(String customId) {
+        JobInfoPageItem jobInfoPageItem = this.getJobByCustomId(customId);
+        if (jobInfoPageItem == null) {
+            return null;
+        }
+        return jobInfoPageItem.getId();
+    }
+
+    @Override
+    public JobInfoPageItem getJobByCustomId(String customId) {
+        JobQuery jobQuery = new JobQuery();
+        jobQuery.setStart(0);
+        jobQuery.setLength(1);
+        jobQuery.setJobGroup(xxlJobAdminProperties.getJobGroupId());
+        jobQuery.setTriggerStatus(TriggerStatusEnum.ALL);
+        jobQuery.setAuthor(customId);
+        JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return null;
+        }
+        JobInfoPageItem jobInfoPageItem = data.get(0);
+        return jobInfoPageItem;
+    }
+
+    @Override
     public Integer add(DefaultXxlJobAddParam defaultXxlJobAddParam) {
         XxlJobInfo jobInfo = new XxlJobInfo();
         ScheduleTypeEnum scheduleType = defaultXxlJobAddParam.getScheduleType();
@@ -138,6 +189,60 @@ public class XxlJobServiceImpl implements XxlJobService {
 
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
         requestXxlJobAdmin(httpRequest, jsonObject,new TypeReference<ReturnT<String>>(){});
+    }
+
+    @Override
+    public void update(JobInfoPageItem jobInfoPageItem) {
+        XxlJobInfo xxlJobInfo = this.transform(jobInfoPageItem);
+        this.update(xxlJobInfo);
+    }
+
+
+    @Override
+    public XxlJobInfo transform(JobInfoPageItem jobInfoPageItem){
+        XxlJobInfo jobInfo = new XxlJobInfo();
+        jobInfo.setId(jobInfoPageItem.getId());
+        jobInfo.setJobGroup(jobInfoPageItem.getJobGroup());
+        jobInfo.setJobDesc(jobInfoPageItem.getJobDesc());
+        jobInfo.setAuthor(jobInfoPageItem.getAuthor());
+        jobInfo.setAlarmEmail(jobInfoPageItem.getAlarmEmail());
+        jobInfo.setScheduleType(jobInfoPageItem.getScheduleType());
+        jobInfo.setScheduleConf(jobInfoPageItem.getScheduleConf());
+        jobInfo.setMisfireStrategy(jobInfoPageItem.getMisfireStrategy());
+        jobInfo.setExecutorRouteStrategy(jobInfoPageItem.getExecutorRouteStrategy());
+        jobInfo.setExecutorHandler(jobInfoPageItem.getExecutorHandler());
+        jobInfo.setExecutorParam(jobInfoPageItem.getExecutorParam());
+        jobInfo.setExecutorBlockStrategy(jobInfoPageItem.getExecutorBlockStrategy());
+        jobInfo.setExecutorTimeout(jobInfoPageItem.getExecutorTimeout());
+        jobInfo.setExecutorFailRetryCount(jobInfoPageItem.getExecutorFailRetryCount());
+        jobInfo.setGlueType(jobInfoPageItem.getGlueType());
+        jobInfo.setGlueSource(jobInfoPageItem.getGlueSource());
+        jobInfo.setGlueRemark(jobInfoPageItem.getGlueRemark());
+        jobInfo.setChildJobId(jobInfoPageItem.getChildJobId());
+        jobInfo.setTriggerLastTime(jobInfoPageItem.getTriggerLastTime());
+        jobInfo.setTriggerNextTime(jobInfoPageItem.getTriggerNextTime());
+
+        String addTime = jobInfoPageItem.getAddTime();
+        if (StrUtil.isNotBlank(addTime)) {
+            DateTime dateTime = DateUtil.parse(addTime);
+            jobInfo.setAddTime(dateTime);
+        }
+        String updateTime = jobInfoPageItem.getUpdateTime();
+        if (StrUtil.isNotBlank(updateTime)) {
+            DateTime dateTime = DateUtil.parse(updateTime);
+            jobInfo.setUpdateTime(dateTime);
+        }
+        String glueUpdatetime = jobInfoPageItem.getGlueUpdatetime();
+        if (StrUtil.isNotBlank(glueUpdatetime)) {
+            DateTime dateTime = DateUtil.parse(glueUpdatetime);
+            jobInfo.setGlueUpdatetime(dateTime);
+        }
+        Long triggerStatus = jobInfoPageItem.getTriggerStatus();
+        if (triggerStatus != null) {
+            jobInfo.setTriggerStatus(triggerStatus.intValue());
+        }
+
+        return jobInfo;
     }
 
     @Override

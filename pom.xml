@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lxgnb</groupId>
     <artifactId>xxl-job-boot-starter</artifactId>
-    <version>2.3.0-jobinfo-executor-1</version>
+    <version>2.3.0-jobinfo-executor-2</version>
     <name>xxl-job-admin-sdk</name>
     <description>xxl-job-boot-starter</description>
     <url>https://github.com/aitxiaogang/xxl-job-boot-starter.git</url>
@@ -47,25 +47,6 @@
     </dependencies>
 
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
-    <scm>
-        <connection>scm:git:git://github.com/aitxiaogang/xxl-job-admin-sdk-boot-starter.git</connection>
-        <developerConnection>scm:git:ssh://github.com/aitxiaogang/xxl-job-admin-sdk-boot-starter.git</developerConnection>
-        <url>https://github.com/aitxiaogang/xxl-job-admin-sdk-boot-starter.git</url>
-    </scm>
-    <!-- 开发者信息 -->
-    <developers>
-        <developer>
-            <name>lixiaogang</name>
-            <email>aitxiaogang@163.com</email>
-            <url>https://github.com/aitxiaogang</url>
-        </developer>
-    </developers>
 
     <dependencyManagement>
         <dependencies>
@@ -78,101 +59,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.0</version>
-                <!-- 绑定source插件到Maven的生命周期,并在生命周期后执行绑定的source的goal -->
-                <executions>
-                    <execution>
-                        <!-- 绑定source插件到Maven的生命周期 -->
-                        <phase>compile</phase>
-                        <!--在生命周期后执行绑定的source插件的goals -->
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>ossrh</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- 要生成Javadoc和Source jar文件，您必须配置javadoc和源Maven插件 -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!--  必须配置GPG插件用于使用以下配置对组件进行签名 -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
-
 
 </project>

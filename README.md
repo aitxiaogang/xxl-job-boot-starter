@@ -72,7 +72,7 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 如果大家有什么问题，欢迎大家提出来。这个项目写的很粗糙，大家有什么意见和建议，非常欢迎大家来交流。谢谢
 
 ## 微信群
-![image](https://user-images.githubusercontent.com/18614347/225262174-22d08e5a-4f77-433b-a3cb-d74074da9f4a.png =400x300)
+![image](https://user-images.githubusercontent.com/18614347/225262174-22d08e5a-4f77-433b-a3cb-d74074da9f4a.png=400x300)
 
 
 ## QQ群

@@ -1,4 +1,8 @@
 package com.xiaogang.xxljobadminsdk.service.impl;
+import com.xiaogang.xxljobadminsdk.constants.ScheduleTypeEnum;
+import com.xiaogang.xxljobadminsdk.constants.ExecutorBlockStrategyEnum;
+import com.xiaogang.xxljobadminsdk.constants.ExecutorRouteStrategyEnum;
+import com.xiaogang.xxljobadminsdk.constants.MisfireStrategyEnum;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
@@ -15,6 +19,7 @@ import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
 import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
+import com.xiaogang.xxljobadminsdk.model.JobUpdateParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
@@ -149,15 +154,15 @@ public class XxlJobServiceImpl implements XxlJobService {
         XxlJobInfo jobInfo = new XxlJobInfo();
         ScheduleTypeEnum scheduleType = defaultXxlJobAddParam.getScheduleType();
         if (scheduleType != null) {
-            jobInfo.setScheduleType(scheduleType.name());
+            jobInfo.setScheduleType(scheduleType);
         }
         MisfireStrategyEnum misfireStrategy = defaultXxlJobAddParam.getMisfireStrategy();
         if (misfireStrategy != null) {
-            jobInfo.setMisfireStrategy(misfireStrategy.name());
+            jobInfo.setMisfireStrategy(misfireStrategy);
         }
         ExecutorRouteStrategyEnum executorRouteStrategy = defaultXxlJobAddParam.getExecutorRouteStrategy();
         if (executorRouteStrategy != null) {
-            jobInfo.setExecutorRouteStrategy(executorRouteStrategy.name());
+            jobInfo.setExecutorRouteStrategy(executorRouteStrategy);
         }
         ExecutorBlockStrategyEnum executorBlockStrategy = defaultXxlJobAddParam.getExecutorBlockStrategy();
         if (executorBlockStrategy != null) {
@@ -165,7 +170,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         }
         GlueTypeEnum glueType = defaultXxlJobAddParam.getGlueType();
         if (glueType != null) {
-            jobInfo.setGlueType(glueType.name());
+            jobInfo.setGlueType(glueType);
         }
 
         BeanUtils.copyProperties(defaultXxlJobAddParam,jobInfo);
@@ -186,7 +191,7 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
-    public void update(XxlJobInfo jobInfo) {
+    public void update(JobUpdateParam jobInfo) {
         HttpRequest httpRequest = postHttpRequest(jobUpdatePath);
 
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
@@ -195,21 +200,21 @@ public class XxlJobServiceImpl implements XxlJobService {
 
     @Override
     public void update(JobInfoPageItem jobInfoPageItem) {
-        XxlJobInfo xxlJobInfo = this.transform(jobInfoPageItem);
+        JobUpdateParam xxlJobInfo = this.transform(jobInfoPageItem);
         this.update(xxlJobInfo);
     }
 
 
     @Override
-    public XxlJobInfo transform(JobInfoPageItem jobInfoPageItem){
-        XxlJobInfo jobInfo = new XxlJobInfo();
+    public JobUpdateParam transform(JobInfoPageItem jobInfoPageItem){
+        JobUpdateParam jobInfo = new JobUpdateParam();
+        jobInfo.setScheduleConf(jobInfoPageItem.getScheduleConf());
         jobInfo.setId(jobInfoPageItem.getId());
         jobInfo.setJobGroup(jobInfoPageItem.getJobGroup());
         jobInfo.setJobDesc(jobInfoPageItem.getJobDesc());
         jobInfo.setAuthor(jobInfoPageItem.getAuthor());
         jobInfo.setAlarmEmail(jobInfoPageItem.getAlarmEmail());
         jobInfo.setScheduleType(jobInfoPageItem.getScheduleType());
-        jobInfo.setScheduleConf(jobInfoPageItem.getScheduleConf());
         jobInfo.setMisfireStrategy(jobInfoPageItem.getMisfireStrategy());
         jobInfo.setExecutorRouteStrategy(jobInfoPageItem.getExecutorRouteStrategy());
         jobInfo.setExecutorHandler(jobInfoPageItem.getExecutorHandler());
@@ -217,32 +222,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         jobInfo.setExecutorBlockStrategy(jobInfoPageItem.getExecutorBlockStrategy());
         jobInfo.setExecutorTimeout(jobInfoPageItem.getExecutorTimeout());
         jobInfo.setExecutorFailRetryCount(jobInfoPageItem.getExecutorFailRetryCount());
-        jobInfo.setGlueType(jobInfoPageItem.getGlueType());
-        jobInfo.setGlueSource(jobInfoPageItem.getGlueSource());
-        jobInfo.setGlueRemark(jobInfoPageItem.getGlueRemark());
         jobInfo.setChildJobId(jobInfoPageItem.getChildJobId());
-        jobInfo.setTriggerLastTime(jobInfoPageItem.getTriggerLastTime());
-        jobInfo.setTriggerNextTime(jobInfoPageItem.getTriggerNextTime());
-
-        String addTime = jobInfoPageItem.getAddTime();
-        if (StrUtil.isNotBlank(addTime)) {
-            DateTime dateTime = DateUtil.parse(addTime);
-            jobInfo.setAddTime(addTime);
-        }
-        String updateTime = jobInfoPageItem.getUpdateTime();
-        if (StrUtil.isNotBlank(updateTime)) {
-            DateTime dateTime = DateUtil.parse(updateTime);
-            jobInfo.setUpdateTime(updateTime);
-        }
-        String glueUpdatetime = jobInfoPageItem.getGlueUpdatetime();
-        if (StrUtil.isNotBlank(glueUpdatetime)) {
-            DateTime dateTime = DateUtil.parse(glueUpdatetime);
-            jobInfo.setGlueUpdatetime(glueUpdatetime);
-        }
-        Long triggerStatus = jobInfoPageItem.getTriggerStatus();
-        if (triggerStatus != null) {
-            jobInfo.setTriggerStatus(triggerStatus.intValue());
-        }
 
         return jobInfo;
     }

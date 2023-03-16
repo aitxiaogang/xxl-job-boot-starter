@@ -2,6 +2,7 @@ package com.xiaogang.xxljobadminsdk.service;
 
 import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
+import com.xiaogang.xxljobadminsdk.model.JobUpdateParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
@@ -39,6 +40,13 @@ public interface XxlJobService {
     Integer add(XxlJobInfoAddParam addParam);
 
     /**
+     * 通过必要参数添加job，其它参数和通过网页添加job的默认参数一样。但是可以修改默认参数
+     * @param defaultXxlJobAddParam
+     * @return
+     */
+    Integer add(DefaultXxlJobAddParam defaultXxlJobAddParam);
+
+    /**
      * 添加只在将来执行一次的任务
      * @param customId 自定义的唯一的业务id，此id在所有任务中保持唯一
      * @param triggerTime 任务执行时间，必须大于当前时间
@@ -63,18 +71,11 @@ public interface XxlJobService {
     JobInfoPageItem getJobByCustomId(String customId);
 
     /**
-     * 通过必要参数添加job，其它参数和通过网页添加job的默认参数一样。但是可以修改默认参数
-     * @param defaultXxlJobAddParam
-     * @return
-     */
-    Integer add(DefaultXxlJobAddParam defaultXxlJobAddParam);
-
-    /**
      * update job
      *
-     * @param jobInfo 任务信息
+     * @param jobUpdateParam 任务信息
      */
-    void update(XxlJobInfo jobInfo);
+    void update(JobUpdateParam jobUpdateParam);
 
     /**
      * 修改任务
@@ -87,7 +88,7 @@ public interface XxlJobService {
      * @param jobInfoPageItem
      * @return
      */
-    XxlJobInfo transform(JobInfoPageItem jobInfoPageItem);
+    JobUpdateParam transform(JobInfoPageItem jobInfoPageItem);
 
     /**
      * remove job

@@ -1,5 +1,9 @@
 package com.xiaogang.xxljobadminsdk.vo;
 
+import com.xiaogang.xxljobadminsdk.constants.ExecutorBlockStrategyEnum;
+import com.xiaogang.xxljobadminsdk.constants.ExecutorRouteStrategyEnum;
+import com.xiaogang.xxljobadminsdk.constants.MisfireStrategyEnum;
+import com.xiaogang.xxljobadminsdk.constants.ScheduleTypeEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,20 +16,20 @@ public @Data class JobInfoPageItem implements Serializable {
 	private String glueUpdatetime;
 	private String executorParam;
 	private String addTime;
-	private String executorBlockStrategy;
+	private ExecutorBlockStrategyEnum executorBlockStrategy;
 	private String author;
 	private String scheduleConf;
-	private String executorRouteStrategy;
+	private ExecutorRouteStrategyEnum executorRouteStrategy;
 	private Long triggerStatus;
-	private String childJobId;
+	private Integer childJobId;
 	private long triggerNextTime;
 	private String updateTime;
 	private int jobGroup;
 	private String glueRemark;
 	private String jobDesc;
 	private String glueSource;
-	private String misfireStrategy;
-	private String scheduleType;
+	private MisfireStrategyEnum misfireStrategy;
+	private ScheduleTypeEnum scheduleType;
 	private String glueType;
 	private String executorHandler;
 	private int executorFailRetryCount;

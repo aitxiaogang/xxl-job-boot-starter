@@ -2,6 +2,7 @@ package com.xiaogang.xxljobadminsdk.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.PageUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
@@ -310,6 +311,48 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
+    public void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
+        JobQuery jobQuery = new JobQuery();
+        jobQuery.setStart(0);
+        jobQuery.setLength(10);
+        jobQuery.setJobGroup(jobGroup);
+
+        jobQuery.setTriggerStatus(TriggerStatusEnum.getByStatus(triggerStatus));
+        jobQuery.setJobDesc(jobDesc);
+        jobQuery.setExecutorHandler(executorHandler);
+        jobQuery.setAuthor(author);
+        JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
+        List<JobInfoPageItem> data = jobInfoPageResult.getData();
+        if (CollUtil.isEmpty(data)) {
+            return;
+        }
+
+        for (JobInfoPageItem item : data) {
+            this.remove(item.getId());
+        }
+
+        int recordsTotal = jobInfoPageResult.getRecordsTotal();
+        int totalPage = PageUtil.totalPage(recordsTotal, jobQuery.getLength());
+        for (int i = 1; i < totalPage; i++) {
+            int start = PageUtil.getStart(i, jobQuery.getLength());
+            jobQuery.setStart(start);
+            jobInfoPageResult = this.pageList(jobQuery);
+
+            data = jobInfoPageResult.getData();
+            for (JobInfoPageItem item : data) {
+                this.remove(item.getId());
+            }
+        }
+
+    }
+
+    @Override
+    public void removeAll(int triggerStatus, String jobDesc, String executorHandler, String author) {
+        int defaultJobGroupId = this.getDefaultJobGroupId();
+        this.removeAll(defaultJobGroupId,triggerStatus,jobDesc,executorHandler,author);
+    }
+
+    @Override
     public void start(JobQuery jobQuery) {
         JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
         List<JobInfoPageItem> data = jobInfoPageResult.getData();
@@ -333,12 +376,6 @@ public class XxlJobServiceImpl implements XxlJobService {
             jobQuery.setStart(i++);
             jobInfoPageResult = this.pageList(jobQuery);
         }
-    }
-
-    @Override
-    public void stopAndRemove(JobQuery jobGroup) {
-        this.stop(jobGroup);
-        this.remove(jobGroup);
     }
 
     @Override
@@ -371,18 +408,19 @@ public class XxlJobServiceImpl implements XxlJobService {
             this.stop(item.getId());
         }
 
-        int i = 1;
-        while (data.size() > 10) {
+        int recordsTotal = jobInfoPageResult.getRecordsTotal();
+        int totalPage = PageUtil.totalPage(recordsTotal, jobQuery.getLength());
+        for (int i = 1; i < totalPage; i++) {
+            int start = PageUtil.getStart(i, jobQuery.getLength());
+            jobQuery.setStart(start);
+            jobInfoPageResult = this.pageList(jobQuery);
+
             data = jobInfoPageResult.getData();
-            if (CollUtil.isEmpty(data)) {
-                return;
-            }
             for (JobInfoPageItem item : data) {
                 this.stop(item.getId());
             }
-            jobQuery.setStart(i++);
-            jobInfoPageResult = this.pageList(jobQuery);
         }
+
     }
 
     @Override

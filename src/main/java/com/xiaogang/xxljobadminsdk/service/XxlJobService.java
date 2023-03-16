@@ -131,12 +131,24 @@ public interface XxlJobService {
      */
     void remove(JobQuery jobQuery);
 
-    void start(JobQuery jobQuery);
+    /**
+     * 删除符合条件的所有任务
+     * @param jobGroup
+     * @param triggerStatus
+     * @param jobDesc
+     * @param executorHandler
+     * @param author
+     */
+    void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
 
     /**
-     * 停止运行中的任务并删除
+     * 删除符合条件的所有任务---默认的执行器
+     * @param triggerStatus
+     * @param jobDesc
+     * @param executorHandler
+     * @param author
      */
-    void stopAndRemove(JobQuery jobQuery);
+    void removeAll(int triggerStatus, String jobDesc, String executorHandler, String author);
 
     /**
      * start job
@@ -144,6 +156,12 @@ public interface XxlJobService {
      * @param id 任务id
      */
     void start(int id);
+
+    /**
+     * 开始所有符合条件的任务
+     * @param jobQuery
+     */
+    void start(JobQuery jobQuery);
 
     /**
      * stop job

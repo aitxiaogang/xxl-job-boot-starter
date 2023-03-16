@@ -46,8 +46,6 @@
         </dependency>
     </dependencies>
 
-
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -59,5 +57,21 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Snapshot Repository</name>
+            <url>http://182.254.141.241:9999/repository/xg_snapshot/</url>
+            <layout>default</layout>
+        </snapshotRepository>
+        <repository>
+            <id>nexus</id>
+            <name>Release Repository</name>
+            <url>http://182.254.141.241:9999/repository/xg_release/</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
 
 </project>

@@ -98,6 +98,8 @@ public class XxlJobServiceImpl implements XxlJobService {
 
     @Override
     public Integer addJustExecuteOnceJob(String customId, Date triggerTime, String executorParam, String executorHandler) {
+        JobInfoPageItem jobInfoPageItem = this.getJobByCustomId(customId);
+        Assert.isNull(jobInfoPageItem,"已经存在自定义id为{}的任务，请修改",customId);
         Date now = new Date();
         boolean after = triggerTime.after(now);
         Assert.isTrue(after,"任务执行时间必须大于当前时间");
@@ -225,17 +227,17 @@ public class XxlJobServiceImpl implements XxlJobService {
         String addTime = jobInfoPageItem.getAddTime();
         if (StrUtil.isNotBlank(addTime)) {
             DateTime dateTime = DateUtil.parse(addTime);
-            jobInfo.setAddTime(dateTime);
+            jobInfo.setAddTime(addTime);
         }
         String updateTime = jobInfoPageItem.getUpdateTime();
         if (StrUtil.isNotBlank(updateTime)) {
             DateTime dateTime = DateUtil.parse(updateTime);
-            jobInfo.setUpdateTime(dateTime);
+            jobInfo.setUpdateTime(updateTime);
         }
         String glueUpdatetime = jobInfoPageItem.getGlueUpdatetime();
         if (StrUtil.isNotBlank(glueUpdatetime)) {
             DateTime dateTime = DateUtil.parse(glueUpdatetime);
-            jobInfo.setGlueUpdatetime(dateTime);
+            jobInfo.setGlueUpdatetime(glueUpdatetime);
         }
         Long triggerStatus = jobInfoPageItem.getTriggerStatus();
         if (triggerStatus != null) {

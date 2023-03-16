@@ -10,10 +10,12 @@ import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
 import com.xiaogang.xxljobadminsdk.service.impl.XxlJobServiceImpl;
 import com.xxl.job.core.biz.AdminBiz;
+import com.xxl.job.core.biz.client.AdminBizClient;
 import com.xxl.job.core.biz.model.RegistryParam;
 import com.xxl.job.core.enums.RegistryConfig;
-import com.xxl.job.core.executor.XxlJobExecutor;
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
+import com.xxl.job.core.util.IpUtil;
+import com.xxl.job.core.util.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -69,6 +71,7 @@ public class XxlJobAdminAutoConfigure {
 
         String headerValue = new StringBuilder(cookieName).append("=").append(cookie.getValue()).toString();
         HttpHeader loginHeader = new HttpHeader("Cookie", headerValue);
+
         return loginHeader;
     }
 
@@ -89,25 +92,29 @@ public class XxlJobAdminAutoConfigure {
         xxlJobSpringExecutor.setAdminAddresses(adminUrl);
 
         String appname = xxlJobAdminProperties.getAppname();
-        Assert.notBlank(appname,"请配置执行器参数appname");
+        Assert.notBlank(appname, "请配置执行器参数appname");
         xxlJobSpringExecutor.setAppname(appname);
 
+
         String address = xxlJobAdminProperties.getAddress();
-        if (StrUtil.isBlank(address)) {
-            address = InetAddress.getLocalHost().getHostAddress();
-        }
-        xxlJobSpringExecutor.setAddress(address);
 
         String ip = xxlJobAdminProperties.getIp();
-        if (StrUtil.isNotBlank(ip)) {
-            xxlJobSpringExecutor.setIp(ip);
+        if (StrUtil.isBlank(ip)) {
+            ip = IpUtil.getIp();
         }
+        xxlJobSpringExecutor.setIp(ip);
 
         Integer port = xxlJobAdminProperties.getPort();
         if (port == null) {
-            port = 9999;
+            port = NetUtil.findAvailablePort(9999);
         }
         xxlJobSpringExecutor.setPort(port);
+
+        if (StrUtil.isBlank(address)) {
+            String ip_port_address = IpUtil.getIpPort(ip, port);
+            address = "http://{ip_port}/".replace("{ip_port}", ip_port_address);
+        }
+        xxlJobSpringExecutor.setAddress(address);
 
         String accessToken = xxlJobAdminProperties.getAccessToken();
         if (StrUtil.isNotBlank(accessToken)) {
@@ -124,23 +131,20 @@ public class XxlJobAdminAutoConfigure {
             xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
         }
 
-
         RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
-        for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
-            try {
-                com.xxl.job.core.biz.model.ReturnT<String> registryResult = adminBiz.registry(registryParam);
-                if (registryResult!=null && com.xxl.job.core.biz.model.ReturnT.SUCCESS_CODE == registryResult.getCode()) {
-                    registryResult = com.xxl.job.core.biz.model.ReturnT.SUCCESS;
-                    logger.debug(">>>>>>>>>>> xxl-job registry success, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
-                    break;
-                } else {
-                    logger.info(">>>>>>>>>>> xxl-job registry fail, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
-                    Assert.isTrue(false,">>>>>>>>>>> xxl-job registry fail, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
-                }
-            } catch (Exception e) {
-                logger.info(">>>>>>>>>>> xxl-job registry error, registryParam:{}", registryParam, e);
-                Assert.isTrue(false,">>>>>>>>>>> xxl-job registry error, registryParam:{}", registryParam, e);
+        AdminBiz adminBiz = new AdminBizClient(adminUrl.trim(), accessToken);
+        try {
+            com.xxl.job.core.biz.model.ReturnT<String> registryResult = adminBiz.registry(registryParam);
+            if (registryResult != null && com.xxl.job.core.biz.model.ReturnT.SUCCESS_CODE == registryResult.getCode()) {
+                registryResult = com.xxl.job.core.biz.model.ReturnT.SUCCESS;
+                logger.debug(">>>>>>>>>>> xxl-job registry success, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
+            } else {
+                logger.info(">>>>>>>>>>> xxl-job registry fail, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
+                Assert.isTrue(false, ">>>>>>>>>>> xxl-job registry fail, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
             }
+        } catch (Exception e) {
+            logger.info(">>>>>>>>>>> xxl-job registry error, registryParam:{}", registryParam, e);
+            Assert.isTrue(false, ">>>>>>>>>>> xxl-job registry error, registryParam:{}", registryParam, e);
         }
 
         return xxlJobSpringExecutor;

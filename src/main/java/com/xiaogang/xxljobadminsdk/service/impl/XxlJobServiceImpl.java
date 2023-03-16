@@ -1,14 +1,7 @@
 package com.xiaogang.xxljobadminsdk.service.impl;
-import com.xiaogang.xxljobadminsdk.constants.ScheduleTypeEnum;
-import com.xiaogang.xxljobadminsdk.constants.ExecutorBlockStrategyEnum;
-import com.xiaogang.xxljobadminsdk.constants.ExecutorRouteStrategyEnum;
-import com.xiaogang.xxljobadminsdk.constants.MisfireStrategyEnum;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
@@ -16,6 +9,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.xiaogang.xxljobadminsdk.config.XxlJobAdminProperties;
 import com.xiaogang.xxljobadminsdk.constants.*;
 import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
+import com.xiaogang.xxljobadminsdk.dto.JobGroupQuery;
 import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.dto.ReturnT;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
@@ -24,6 +18,8 @@ import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
 import com.xiaogang.xxljobadminsdk.service.XxlJobService;
 import com.xiaogang.xxljobadminsdk.utils.MyUtil;
+import com.xiaogang.xxljobadminsdk.vo.DataItem;
+import com.xiaogang.xxljobadminsdk.vo.JobGroupPageResult;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +69,56 @@ public class XxlJobServiceImpl implements XxlJobService {
         return jobInfoPageResult;
     }
 
+    @Override
+    public JobGroupPageResult pageList(JobGroupQuery jobGroupQuery) {
+        this.validQueryParam(jobGroupQuery);
+        HttpRequest httpRequest = this.getHttpRequest(jobGroupListPath);
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("start",jobGroupQuery.getStart());
+        paramMap.put("length",jobGroupQuery.getLength());
+        paramMap.put("appname",jobGroupQuery.getAppname());
+        paramMap.put("title",jobGroupQuery.getTitle());
+
+        HttpResponse response = httpRequest.form(paramMap).timeout(timeout).execute();
+        int status = response.getStatus();
+        String body = response.body();
+        log.debug("status:{},body:{}",status,body);
+        Assert.isTrue(status == 200,body);
+        JobGroupPageResult jobInfoPageResult = JSON.parseObject(body, JobGroupPageResult.class);
+
+        return jobInfoPageResult;
+    }
+
+    @Override
+    public int getFirstJobGroupIdByAppName(String appName) {
+        JobGroupQuery jobGroupQuery = new JobGroupQuery();
+        jobGroupQuery.setStart(0);
+        jobGroupQuery.setLength(1);
+        jobGroupQuery.setAppname(appName);
+        JobGroupPageResult jobGroupPageResult = this.pageList(jobGroupQuery);
+        String errorMsgTemplate = "查询结果为空，请检查是否创建对应名称的执行器";
+        Assert.notNull(jobGroupPageResult, errorMsgTemplate);
+        List<DataItem> data = jobGroupPageResult.getData();
+        Assert.isTrue(CollUtil.isNotEmpty(data), errorMsgTemplate);
+        DataItem dataItem = data.get(0);
+        int id = dataItem.getId();
+        return id;
+    }
+
+    @Override
+    public int getDefaultJobGroupId() {
+        String appname = xxlJobAdminProperties.getAppname();
+        int jobGroupIdByAppName = this.getFirstJobGroupIdByAppName(appname);
+        return jobGroupIdByAppName;
+    }
+
+    private void validQueryParam(JobGroupQuery jobGroupQuery) {
+        int start = jobGroupQuery.getStart();
+        Assert.notNull(start,"分页参数start不能为null");
+        int length = jobGroupQuery.getLength();
+        Assert.notNull(length,"分页参数length不能为null");
+    }
+
     private void validQueryParam(JobQuery jobQuery){
         int jobGroup = jobQuery.getJobGroup();
         Assert.notNull(jobGroup,"jobGroup不能为null");
@@ -109,7 +155,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         boolean after = triggerTime.after(now);
         Assert.isTrue(after,"任务执行时间必须大于当前时间");
         XxlJobInfoAddParam addParam = new XxlJobInfoAddParam();
-        Integer jobGroupId = xxlJobAdminProperties.getJobGroupId();
+        Integer jobGroupId = this.getDefaultJobGroupId();
         addParam.setJobGroup(jobGroupId);
         addParam.setJobDesc("none");
         addParam.setAuthor(customId);
@@ -137,7 +183,8 @@ public class XxlJobServiceImpl implements XxlJobService {
         JobQuery jobQuery = new JobQuery();
         jobQuery.setStart(0);
         jobQuery.setLength(1);
-        jobQuery.setJobGroup(xxlJobAdminProperties.getJobGroupId());
+        int jobGroup = this.getDefaultJobGroupId();
+        jobQuery.setJobGroup(jobGroup);
         jobQuery.setTriggerStatus(TriggerStatusEnum.ALL);
         jobQuery.setAuthor(customId);
         JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);

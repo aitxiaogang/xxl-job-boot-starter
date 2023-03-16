@@ -1,10 +1,12 @@
 package com.xiaogang.xxljobadminsdk.service;
 
+import com.xiaogang.xxljobadminsdk.dto.JobGroupQuery;
 import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
 import com.xiaogang.xxljobadminsdk.model.JobUpdateParam;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfo;
 import com.xiaogang.xxljobadminsdk.model.XxlJobInfoAddParam;
+import com.xiaogang.xxljobadminsdk.vo.JobGroupPageResult;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
 
@@ -21,8 +23,34 @@ public interface XxlJobService {
     String jobTriggerPath = "/jobinfo/trigger";
     String jobPageListPath = "/jobinfo/pageList";
     String jobNextTriggerTimePath = "/jobinfo/nextTriggerTime";
+    String jobGroupListPath = "/jobgroup/pageList";
 
+    /**
+     * 分页查询任务数据
+     * @param jobQuery
+     * @return
+     */
     JobInfoPageResult pageList(JobQuery jobQuery);
+
+    /**
+     * 分页查询执行器数据
+     * @param jobGroupQuery
+     * @return
+     */
+    JobGroupPageResult pageList(JobGroupQuery jobGroupQuery);
+
+    /**
+     * 通过执行器名称查询执行器id
+     * @param appName
+     * @return
+     */
+    int getFirstJobGroupIdByAppName(String appName);
+
+    /**
+     * 通过配置的appname查询执行器id
+     * @return
+     */
+    int getDefaultJobGroupId();
 
     /**
      * 包含添加job的所有参数

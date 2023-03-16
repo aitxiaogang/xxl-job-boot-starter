@@ -40,8 +40,8 @@ public class XxlJobAdminAutoConfigure {
         String adminUrl = xxlJobAdminProperties.getAdminUrl();
         Assert.notBlank(adminUrl, "请配置adminUrl");
 
-        Integer jobGroupId = xxlJobAdminProperties.getJobGroupId();
-        Assert.notNull(jobGroupId, "请配置jobGroupId");
+//        Integer jobGroupId = xxlJobAdminProperties.getJobGroupId();
+//        Assert.notNull(jobGroupId, "请配置jobGroupId");
 
         String userName = xxlJobAdminProperties.getUserName();
         String password = xxlJobAdminProperties.getPassword();

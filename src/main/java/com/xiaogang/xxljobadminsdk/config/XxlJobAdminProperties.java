@@ -27,6 +27,5 @@ public class XxlJobAdminProperties {
     private String logPath;
     //执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
     private Integer logRetentionDays = 30;
-    private Integer jobGroupId;
 
 }

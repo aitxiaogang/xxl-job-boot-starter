@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class XxlJobInfoAddParam {
 
-    protected int jobGroup;		// 执行器主键ID
     protected String jobDesc;
     protected String author;		// 负责人
     protected String alarmEmail;	// 报警邮件

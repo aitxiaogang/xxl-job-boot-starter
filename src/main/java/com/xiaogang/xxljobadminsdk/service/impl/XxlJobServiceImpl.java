@@ -55,7 +55,9 @@ public class XxlJobServiceImpl implements XxlJobService {
         paramMap.put("length",jobQuery.getLength());
         paramMap.put("jobGroup",jobQuery.getJobGroup());
         TriggerStatusEnum triggerStatus = jobQuery.getTriggerStatus();
-        paramMap.put("triggerStatus", triggerStatus.getStatus());
+        if (triggerStatus != null) {
+            paramMap.put("triggerStatus", triggerStatus.getStatus());
+        }
         paramMap.put("jobDesc",jobQuery.getJobDesc());
         paramMap.put("executorHandler",jobQuery.getExecutorHandler());
         paramMap.put("author",jobQuery.getAuthor());
@@ -156,8 +158,6 @@ public class XxlJobServiceImpl implements XxlJobService {
         boolean after = triggerTime.after(now);
         Assert.isTrue(after,"任务执行时间必须大于当前时间");
         XxlJobInfoAddParam addParam = new XxlJobInfoAddParam();
-        Integer jobGroupId = this.getDefaultJobGroupId();
-        addParam.setJobGroup(jobGroupId);
         addParam.setJobDesc("none");
         addParam.setAuthor(customId);
         addParam.setScheduleType(ScheduleTypeEnum.CRON);
@@ -223,6 +223,9 @@ public class XxlJobServiceImpl implements XxlJobService {
 
         BeanUtils.copyProperties(defaultXxlJobAddParam,jobInfo);
 
+        Integer jobGroupId = this.getDefaultJobGroupId();
+        jobInfo.setJobGroup(jobGroupId);
+
         this.validAddJobParam(jobInfo);
         Integer jobId = this.add(jobInfo);
         return jobId;
@@ -285,39 +288,13 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
-    public void remove(JobQuery jobQuery) {
-        JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
-        List<JobInfoPageItem> data = jobInfoPageResult.getData();
-        if (CollUtil.isEmpty(data)) {
-            return;
-        }
-
-        for (JobInfoPageItem item : data) {
-            this.remove(item.getId());
-        }
-
-        int i = 1;
-        while (data.size() > 10) {
-            data = jobInfoPageResult.getData();
-            if (CollUtil.isEmpty(data)) {
-                return;
-            }
-            for (JobInfoPageItem item : data) {
-                this.remove(item.getId());
-            }
-            jobQuery.setStart(i++);
-            jobInfoPageResult = this.pageList(jobQuery);
-        }
-    }
-
-    @Override
-    public void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
+    public void remove(TriggerStatusEnum triggerStatus, String jobDesc, String executorHandler, String author) {
         JobQuery jobQuery = new JobQuery();
         jobQuery.setStart(0);
         jobQuery.setLength(10);
-        jobQuery.setJobGroup(jobGroup);
+        jobQuery.setJobGroup(this.getDefaultJobGroupId());
 
-        jobQuery.setTriggerStatus(TriggerStatusEnum.getByStatus(triggerStatus));
+        jobQuery.setTriggerStatus(triggerStatus);
         jobQuery.setJobDesc(jobDesc);
         jobQuery.setExecutorHandler(executorHandler);
         jobQuery.setAuthor(author);
@@ -334,8 +311,6 @@ public class XxlJobServiceImpl implements XxlJobService {
         int recordsTotal = jobInfoPageResult.getRecordsTotal();
         int totalPage = PageUtil.totalPage(recordsTotal, jobQuery.getLength());
         for (int i = 1; i < totalPage; i++) {
-            int start = PageUtil.getStart(i, jobQuery.getLength());
-            jobQuery.setStart(start);
             jobInfoPageResult = this.pageList(jobQuery);
 
             data = jobInfoPageResult.getData();
@@ -343,17 +318,19 @@ public class XxlJobServiceImpl implements XxlJobService {
                 this.remove(item.getId());
             }
         }
-
     }
 
     @Override
-    public void removeAll(int triggerStatus, String jobDesc, String executorHandler, String author) {
-        int defaultJobGroupId = this.getDefaultJobGroupId();
-        this.removeAll(defaultJobGroupId,triggerStatus,jobDesc,executorHandler,author);
-    }
+    public void start(TriggerStatusEnum triggerStatus, String jobDesc, String executorHandler, String author) {
+        JobQuery jobQuery = new JobQuery();
+        jobQuery.setStart(0);
+        jobQuery.setLength(10);
+        jobQuery.setJobGroup(this.getDefaultJobGroupId());
 
-    @Override
-    public void start(JobQuery jobQuery) {
+        jobQuery.setTriggerStatus(triggerStatus);
+        jobQuery.setJobDesc(jobDesc);
+        jobQuery.setExecutorHandler(executorHandler);
+        jobQuery.setAuthor(author);
         JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
         List<JobInfoPageItem> data = jobInfoPageResult.getData();
         if (CollUtil.isEmpty(data)) {
@@ -364,17 +341,17 @@ public class XxlJobServiceImpl implements XxlJobService {
             this.start(item.getId());
         }
 
-        int i = 1;
-        while (data.size() > 10) {
+        int recordsTotal = jobInfoPageResult.getRecordsTotal();
+        int totalPage = PageUtil.totalPage(recordsTotal, jobQuery.getLength());
+        for (int i = 1; i < totalPage; i++) {
+            int start = PageUtil.getStart(i, jobQuery.getLength());
+            jobQuery.setStart(start);
+            jobInfoPageResult = this.pageList(jobQuery);
+
             data = jobInfoPageResult.getData();
-            if (CollUtil.isEmpty(data)) {
-                return;
-            }
             for (JobInfoPageItem item : data) {
                 this.start(item.getId());
             }
-            jobQuery.setStart(i++);
-            jobInfoPageResult = this.pageList(jobQuery);
         }
     }
 
@@ -397,7 +374,16 @@ public class XxlJobServiceImpl implements XxlJobService {
     }
 
     @Override
-    public void stop(JobQuery jobQuery) {
+    public void stop(TriggerStatusEnum triggerStatus, String jobDesc, String executorHandler, String author) {
+        JobQuery jobQuery = new JobQuery();
+        jobQuery.setStart(0);
+        jobQuery.setLength(10);
+        jobQuery.setJobGroup(this.getDefaultJobGroupId());
+
+        jobQuery.setTriggerStatus(triggerStatus);
+        jobQuery.setJobDesc(jobDesc);
+        jobQuery.setExecutorHandler(executorHandler);
+        jobQuery.setAuthor(author);
         JobInfoPageResult jobInfoPageResult = this.pageList(jobQuery);
         List<JobInfoPageItem> data = jobInfoPageResult.getData();
         if (CollUtil.isEmpty(data)) {
@@ -420,7 +406,6 @@ public class XxlJobServiceImpl implements XxlJobService {
                 this.stop(item.getId());
             }
         }
-
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.xiaogang.xxljobadminsdk.service;
 
+import com.xiaogang.xxljobadminsdk.constants.TriggerStatusEnum;
 import com.xiaogang.xxljobadminsdk.dto.JobGroupQuery;
 import com.xiaogang.xxljobadminsdk.dto.JobQuery;
 import com.xiaogang.xxljobadminsdk.model.DefaultXxlJobAddParam;
@@ -125,21 +126,6 @@ public interface XxlJobService {
      */
     void remove(int id);
 
-    /**
-     * 删除所有符合条件的任务
-     * @param jobQuery
-     */
-    void remove(JobQuery jobQuery);
-
-    /**
-     * 删除符合条件的所有任务
-     * @param jobGroup
-     * @param triggerStatus
-     * @param jobDesc
-     * @param executorHandler
-     * @param author
-     */
-    void removeAll(int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author);
 
     /**
      * 删除符合条件的所有任务---默认的执行器
@@ -148,7 +134,8 @@ public interface XxlJobService {
      * @param executorHandler
      * @param author
      */
-    void removeAll(int triggerStatus, String jobDesc, String executorHandler, String author);
+    void remove(TriggerStatusEnum triggerStatus, String jobDesc, String executorHandler, String author);
+
 
     /**
      * start job
@@ -159,9 +146,12 @@ public interface XxlJobService {
 
     /**
      * 开始所有符合条件的任务
-     * @param jobQuery
+     * @param triggerStatus
+     * @param jobDesc
+     * @param executorHandler
+     * @param author
      */
-    void start(JobQuery jobQuery);
+    void start(TriggerStatusEnum triggerStatus, String jobDesc, String executorHandler, String author);
 
     /**
      * stop job
@@ -170,7 +160,14 @@ public interface XxlJobService {
      */
     void stop(int id);
 
-    void stop(JobQuery jobQuery);
+    /**
+     * 停止所有符合条件的任务
+     * @param triggerStatus
+     * @param jobDesc
+     * @param executorHandler
+     * @param author
+     */
+    void stop(TriggerStatusEnum triggerStatus, String jobDesc, String executorHandler, String author);
 
     void triggerJob(int id, String executorParam, String addressList);
 

@@ -1,27 +1,33 @@
-# 更新说明-2023-01-04（已上传maven中央仓库）
-1. 2.3.0-jobinfo-executor-1是最新版并合并到了master
-2. 修复了任务执行器注册失败的bug
-3. 封装了任务查询参数到类里面，添加必要参数默认值
-4. 任务相关方法添加参数校验，如果校验没有通过会抛异常
-5. 请求xxl-job-admin添加返回结果校验，如果不是成功，错误信息抛异常提示
-6. 请求xxl-job-admin添加返回结果添加debug日志，显示响应结果信息
-7. 合并重复的任务操作方法，简化调用步骤
-8. 部分代码优化，修改部分任务字段类型
+# 更新说明：2023-03-17
+1. 项目启动之前校验每一个配置参数，如果参数错误会终止项目启动，避免配置错误却不知道执行器启动失败
+2. 将accessToken校验提前到项目启动完成之前，避免accessToken配置错误但是项目还是启动成功影响业务
+3. 每个配置参数添加对应错误提示
+4. 减少不必要的配置参数，降低集成成本，更好使用
+5. 不用再配置jobGroupId，添加任务的执行器默认为appname对应的执行器id
+6. 新增数个操作任务的方法，现在任务相关CRUD方法更充足，多样
+7. 多个方法重载实现相同功能，降低方法调用成本。删除不必要参数
+8. 新增查询执行器功能
+9. 新增只在某个时间执行一次的任务方法，参数更少，添加任务更方便
+10. 新增通过自定义字符串id作为唯一条件查询任务信息或者任务id，操作某个任务更方便（使用的任务负责人（author）字段实现，xxl-job的负责人字段查询是模糊查询，所以自定义id需要差别尽量大）
+11. 删除，停止，启动都提供了两种方法，分别操作一个和操作符合条件的所有任务
+12. 2.3.0-jobinfo-executor-2是最新版并合并到了master
+13. bug修复
 
 # 项目介绍
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
 2. 项目使用的xxl-job-admin版本为2.3.0
 3. 此项目版本号对应xxl-job-admin版本号
 4. 配置了用户名密码之后，此模块会模拟登录请求admin来实现功能
-5. 想要通过代码往admin里面添加job等功能，只需要在springboot项目中引入此项目，配置关键参数，引入sdk类就可以了，其它什么都不用关心了
+5. 想要通过代码往admin里面操作job等功能，只需要在springboot项目中引入此项目，配置关键参数，引入sdk类就可以了，其它什么都不用关心了
 6. 默认配置了XxlJobSpringExecutor，所以不用再额外配置此类交给Spring管理了
 
 下面是自动配置类，默认配置如下
 ```
 @Data
 @ConfigurationProperties(prefix = "xxl.job.sdk")
+@Configuration
 public class XxlJobAdminProperties {
-private String adminUrl = "http://localhost:8080/xxl-job-admin";
+    private String adminUrl = "http://localhost:8080/xxl-job-admin";
     private String userName = "admin";
     private String password = "123456";
     private Integer connectionTimeOut = 5000;
@@ -39,10 +45,8 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
     //执行器运行日志文件存储磁盘路径 [选填] ：需要对该路径拥有读写权限；为空则使用默认路径；
     private String logPath;
     //执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
-    private Integer logRetentionDays;
-    private Integer jobGroupId;
+    private Integer logRetentionDays = 30;
 
-    private boolean enable = false;
 }
 ```
 # 使用方法
@@ -50,14 +54,14 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 <dependency>
     <groupId>com.lxgnb</groupId>
     <artifactId>xxl-job-boot-starter</artifactId>
-    <version>2.3.0-jobinfo-executor-1</version>
+    <version>2.3.0-jobinfo-executor-2</version>
 </dependency>
 ```
 1. pom文件中添加上面的依赖坐标（已上传到maven中央仓库）
 2. 添加配置项，配置参数如下
-3. ![image](https://user-images.githubusercontent.com/18614347/210478721-f83f202d-8d00-4c2b-a6c3-c8e61fd87872.png)
-5. 接下来注入关键的类，使用XxlJobService来控制job的crud
-6. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">
+3. <img width="510" alt="image" src="https://user-images.githubusercontent.com/18614347/225945079-beab4c11-3c83-4cba-b676-43c8d82b5f30.png">
+4. 接下来注入关键的类，使用XxlJobService来控制job的crud
+5. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">
 
 ## 添加job
 1. 添加任务有三个方法，对应的参数个数不一样，截图如下
@@ -68,7 +72,7 @@ private String adminUrl = "http://localhost:8080/xxl-job-admin";
 6. 之所以提供三个方法来添加任务是为了方便添加任务，不用每个参数都去设置
 
 
-使用方法就是这样，现在只接入了JOB的crud，后续看项目情况也许会接入其它接口。
+使用方法就是这样，后续看项目情况也许会接入其它接口。
 如果大家有什么问题，欢迎大家提出来。这个项目写的很粗糙，大家有什么意见和建议，非常欢迎大家来交流。谢谢
 
 ## 微信群

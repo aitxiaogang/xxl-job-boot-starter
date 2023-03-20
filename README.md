@@ -77,7 +77,8 @@ public class XxlJobAdminProperties {
 如果大家有什么问题，欢迎大家提出来。这个项目写的很粗糙，大家有什么意见和建议，非常欢迎大家来交流。谢谢
 
 ## 微信群
-![image](https://user-images.githubusercontent.com/18614347/225265422-ab6f2070-d4ae-4079-8b18-d421d753f9b4.png)
+![image](https://user-images.githubusercontent.com/18614347/226236677-24f4fe3d-cfd8-49cf-9015-4f4d636113e6.png)
+
 
 
 

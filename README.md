@@ -64,12 +64,13 @@ public class XxlJobAdminProperties {
 5. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">
 
 ## 添加job
-1. 添加任务有三个方法，对应的参数个数不一样，截图如下
-2. ![image](https://user-images.githubusercontent.com/18614347/180215693-a94d1d03-b960-46ee-9196-a52f4b5cad64.png)
-3. XxlJobInfo 这是参数最全的类，官方有哪些参数，这个类就有哪些字段
-4. XxlJobInfoAddParam 这个是必填参数，其它参数和在网页上添加任务的默认参数一样
-5. DefaultXxlJobAddParam 这个和 XxlJobInfoAddParam差不多，区别在于默认参数这个类也有字段，可以修改，XxlJobInfoAddParam就只有必填参数，不能修改默认参数
-6. 之所以提供三个方法来添加任务是为了方便添加任务，不用每个参数都去设置
+1. 添加任务有四个方法，对应的参数个数不一样，截图如下
+3. ![image](https://user-images.githubusercontent.com/18614347/226236154-0cff3bfa-c997-4d3a-b5c0-3aa898556547.png)
+4. XxlJobInfo 这是参数最全的类，官方有哪些参数，这个类就有哪些字段
+5. XxlJobInfoAddParam 这个是必填参数，其它参数和在网页上添加任务的默认参数一样
+6. DefaultXxlJobAddParam 这个和 XxlJobInfoAddParam差不多，区别在于默认参数这个类也有字段，可以修改，XxlJobInfoAddParam就只有必填参数，不能修改默认参数
+7. addJustExecuteOnceJob是2.3.0-jobinfo-executor-2新增的方法，因为很多业务只需要执行一次，为了方便添加此类业务，新增了此方法，并且还有和此配套的getJobIdByCustomId方法，方便对此任务进行修改或者删除
+8. 之所以提供三个方法来添加任务是为了方便添加任务，不用每个参数都去设置
 
 
 使用方法就是这样，后续看项目情况也许会接入其它接口。

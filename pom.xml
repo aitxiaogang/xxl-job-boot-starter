@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lxgnb</groupId>
     <artifactId>xxl-job-boot-starter</artifactId>
-    <version>2.3.0-jobinfo-executor-2</version>
+    <version>2.3.1-jobinfo-executor-1</version>
     <name>xxl-job-admin-sdk</name>
     <description>xxl-job-boot-starter</description>
     <url>https://github.com/aitxiaogang/xxl-job-boot-starter.git</url>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.4.5</version>
+            <version>5.8.15</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.xuxueli</groupId>
             <artifactId>xxl-job-core</artifactId>
-            <version>2.3.0</version>
+            <version>2.3.1</version>
         </dependency>
     </dependencies>
 

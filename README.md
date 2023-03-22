@@ -19,7 +19,7 @@
 
 # 项目介绍
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
-2. 项目使用的xxl-job-admin版本为2.3.0
+2. 项目使用的xxl-job-admin版本为2.3.1
 3. 此项目版本号对应xxl-job-admin版本号
 4. 配置了用户名密码之后，此模块会模拟登录请求admin来实现功能
 5. 想要通过代码往admin里面操作job等功能，只需要在springboot项目中引入此项目，配置关键参数，引入sdk类就可以了，其它什么都不用关心了

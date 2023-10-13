@@ -64,6 +64,11 @@ public class XxlJobAutoRegistry implements ApplicationListener<ApplicationReadyE
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         this.xxlJobService = applicationContext.getBean("xxlJobService", XxlJobService.class);
         this.xxlJobAdminProperties = applicationContext.getBean(XxlJobAdminProperties.class);
+        if (StrUtil.isBlank(xxlJobAdminProperties.getAppname())
+                || StrUtil.isBlank(xxlJobAdminProperties.getGroupTitle())) {
+            logger.info("xxl-job appName or groupTitle is blank! Please configure appName and groupTitle in the properties file or add job by hands");
+            return;
+        }
         addJobGroup();
         addJobInfo();
     }

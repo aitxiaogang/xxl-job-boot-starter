@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.xiaogang.xxljobadminsdk.config.XxlJobAdminAutoConfigure
+org.springframework.context.ApplicationListener=\
+  com.xiaogang.xxljobadminsdk.config.XxlJobAutoRegistry

@@ -40,7 +40,7 @@ public class XxlJobInfo {
 
 	protected String childJobId;		// 子任务ID，多个逗号分隔
 
-	protected TriggerStatusEnum triggerStatus;		// 调度状态：0-停止，1-运行
+	protected int triggerStatus;		// 调度状态：0-停止，1-运行
 	protected long triggerLastTime;	// 上次调度时间
 	protected long triggerNextTime;	// 下次调度时间
 

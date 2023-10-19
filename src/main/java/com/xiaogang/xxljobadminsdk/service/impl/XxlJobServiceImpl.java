@@ -25,11 +25,9 @@ import com.xiaogang.xxljobadminsdk.vo.JobInfoPageItem;
 import com.xiaogang.xxljobadminsdk.vo.JobInfoPageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class XxlJobServiceImpl implements XxlJobService {
@@ -50,7 +48,7 @@ public class XxlJobServiceImpl implements XxlJobService {
     public JobInfoPageResult pageList(JobQuery jobQuery) {
         this.validQueryParam(jobQuery);
         HttpRequest httpRequest = this.getHttpRequest(jobPageListPath);
-        Map<String, Object> paramMap = new HashMap();
+        Map<String, Object> paramMap = new HashMap(16);
         paramMap.put("start",jobQuery.getStart());
         paramMap.put("length",jobQuery.getLength());
         paramMap.put("jobGroup",jobQuery.getJobGroup());
@@ -90,6 +88,36 @@ public class XxlJobServiceImpl implements XxlJobService {
         JobGroupPageResult jobInfoPageResult = JSON.parseObject(body, JobGroupPageResult.class);
 
         return jobInfoPageResult;
+    }
+
+    @Override
+    public Integer addJobGroup() {
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("appname",xxlJobAdminProperties.getAppname());
+        paramMap.put("title",xxlJobAdminProperties.getGroupTitle());
+        paramMap.put("addressType", xxlJobAdminProperties.getAddressType());
+        if (xxlJobAdminProperties.getAddressType().equals(1)) {
+            Assert.notBlank(xxlJobAdminProperties.getAddressList(), "手动录入模式下机器地址不能为空");
+            paramMap.put("addressList", xxlJobAdminProperties.getAddressList());
+        }
+        HttpRequest httpRequest = this.postHttpRequest(jobGroupSavePath);
+        ReturnT<String> returnT = requestXxlJobAdmin(httpRequest, paramMap, new TypeReference<ReturnT<String>>() {
+        });
+        return Integer.valueOf(returnT.getContent());
+    }
+
+    @Override
+    public boolean jobGroupPreciselyCheck() {
+        JobGroupQuery jobGroupQuery = new JobGroupQuery();
+        jobGroupQuery.setAppname(xxlJobAdminProperties.getAppname());
+        jobGroupQuery.setTitle(xxlJobAdminProperties.getGroupTitle());
+        JobGroupPageResult groupPageResult = this.pageList(jobGroupQuery);
+        if (Objects.isNull(groupPageResult) || CollUtil.isEmpty(groupPageResult.getData())) {
+            return false;
+        }
+        return groupPageResult.getData().stream()
+                .anyMatch(jobGroup -> jobGroup.getAppname().equals(xxlJobAdminProperties.getAppname())
+                        && jobGroup.getTitle().equals(xxlJobAdminProperties.getGroupTitle()));
     }
 
     @Override

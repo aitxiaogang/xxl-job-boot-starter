@@ -1,3 +1,7 @@
+# 关于文档
+1.此项目比较简单，所有的功能都在XxlJobService接口类里面，方法声明有注释，一看就明白作用。类路径：src/main/java/com/xiaogang/xxljobadminsdk/service/XxlJobService.java
+2.有任何问题欢迎看当前页面底部的加QQ群方式进群讨论
+
 # 更新说明：2023-10-13
 1.在2.3.1版本基础上添加了自动注册执行器与jobHandler的功能，直接使用@xxlRegistry注解标识jobHandler需要自动注册，如需自动注入，需配置groupTitle
 

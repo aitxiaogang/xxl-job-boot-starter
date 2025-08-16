@@ -25,7 +25,6 @@ public interface XxlJobService {
     String jobPageListPath = "/jobinfo/pageList";
     String jobNextTriggerTimePath = "/jobinfo/nextTriggerTime";
     String jobGroupListPath = "/jobgroup/pageList";
-    String jobGroupSavePath = "/jobgroup/save";
 
     /**
      * 分页查询任务数据
@@ -40,18 +39,6 @@ public interface XxlJobService {
      * @return
      */
     JobGroupPageResult pageList(JobGroupQuery jobGroupQuery);
-
-    /**
-     * 添加job执行器
-     * @return
-     */
-    Integer addJobGroup();
-
-    /**
-     * 检查执行器是否已经被添加
-     * @return
-     */
-    boolean jobGroupPreciselyCheck();
 
     /**
      * 通过执行器名称查询执行器id

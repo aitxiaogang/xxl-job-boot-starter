@@ -28,11 +28,4 @@ public class XxlJobAdminProperties {
     //执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
     private Integer logRetentionDays = 30;
 
-    //执行器名称 [选填]：新增执行器依据；为空则关闭自动新增
-    private String groupTitle;
-    //执行器地址注册方式 [选填]：0：自动注册，1：手动录入 默认自动
-    private Integer addressType = 0;
-    //执行器地址列表 [选填]：地址注册方式为手动时必填,多地址逗号分隔
-    private String addressList;
-
 }

@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.net.HttpCookie;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,7 +131,7 @@ public class XxlJobAdminAutoConfigure {
         }
 
         RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
-        AdminBiz adminBiz = new AdminBizClient(adminUrl.trim(), accessToken);
+        AdminBiz adminBiz = new AdminBizClient(adminUrl.trim(), accessToken, xxlJobAdminProperties.getConnectionTimeOut());
         try {
             com.xxl.job.core.biz.model.ReturnT<String> registryResult = adminBiz.registry(registryParam);
             if (registryResult != null && com.xxl.job.core.biz.model.ReturnT.SUCCESS_CODE == registryResult.getCode()) {

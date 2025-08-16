@@ -1,3 +1,10 @@
+# 更新说明：2025-08-16
+
+1. 升级项目SpringBoot版本为3.0.2
+2. 升级项目SDK版本为17
+3. 升级项目依赖的xxl-job版本为3.1.1并适配
+4. 之后版本号和xxl-job版本号保持一致
+
 # 关于文档
 1. 此项目比较简单，所有的功能都在XxlJobService接口类里面，方法声明有注释，一看就明白作用。类路径：src/main/java/com/xiaogang/xxljobadminsdk/service/XxlJobService.java
 2. 有任何问题欢迎看当前页面底部的加QQ群方式进群讨论
@@ -30,7 +37,7 @@
 
 # 项目介绍
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
-2. 项目使用的xxl-job-admin版本为2.3.1
+2. 项目使用的xxl-job-admin版本为2.3.0
 3. 此项目版本号对应xxl-job-admin版本号
 4. 配置了用户名密码之后，此模块会模拟登录请求admin来实现功能
 5. 想要通过代码往admin里面操作job等功能，只需要在springboot项目中引入此项目，配置关键参数，引入sdk类就可以了，其它什么都不用关心了
@@ -90,6 +97,10 @@ public class XxlJobAdminProperties {
 
 使用方法就是这样，后续看项目情况也许会接入其它接口。
 如果大家有什么问题，欢迎大家提出来。这个项目写的很粗糙，大家有什么意见和建议，非常欢迎大家来交流。谢谢
+
+## 微信群
+
+![image](https://user-images.githubusercontent.com/18614347/226236677-24f4fe3d-cfd8-49cf-9015-4f4d636113e6.png)
 
 ## QQ群
 点击链接加入群聊【xxl-job-boot-starter】：https://jq.qq.com/?_wv=1027&k=7T9xX7XY

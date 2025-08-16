@@ -19,7 +19,7 @@ import java.io.Serializable;
 public class JobQuery implements Serializable {
     private int start = 0;
     private int length = 10;
-    private int jobGroup;
+    private Integer jobGroup;
     private TriggerStatusEnum triggerStatus = TriggerStatusEnum.ALL;
     private String jobDesc;
     private String executorHandler;

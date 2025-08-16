@@ -4,17 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lxgnb</groupId>
     <artifactId>xxl-job-boot-starter</artifactId>
-    <version>2.3.1-jobinfo-executor-2</version>
+    <version>3.1.1</version>
     <name>xxl-job-admin-sdk</name>
     <description>xxl-job-boot-starter</description>
     <url>https://github.com/aitxiaogang/xxl-job-boot-starter.git</url>
 
     <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <hutool.version>5.8.36</hutool.version>
     </properties>
     <dependencies>
         <dependency>
@@ -34,17 +34,17 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.15</version>
+            <version>${hutool.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>2.0.26</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.57</version>
         </dependency>
         <dependency>
             <groupId>com.xuxueli</groupId>
             <artifactId>xxl-job-core</artifactId>
-            <version>2.3.1</version>
+            <version>3.1.1</version>
         </dependency>
     </dependencies>
 
@@ -73,7 +73,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>3.0.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -85,10 +85,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <source>17</source> <!-- JDK 版本 -->
+                    <target>17</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
             <plugin>

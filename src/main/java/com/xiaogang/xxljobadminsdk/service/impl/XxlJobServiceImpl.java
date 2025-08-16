@@ -5,8 +5,9 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.PageUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.TypeReference;
 import com.xiaogang.xxljobadminsdk.config.XxlJobAdminProperties;
 import com.xiaogang.xxljobadminsdk.constants.*;
 import com.xiaogang.xxljobadminsdk.dto.HttpHeader;
@@ -53,12 +54,10 @@ public class XxlJobServiceImpl implements XxlJobService {
         paramMap.put("length",jobQuery.getLength());
         paramMap.put("jobGroup",jobQuery.getJobGroup());
         TriggerStatusEnum triggerStatus = jobQuery.getTriggerStatus();
-        if (triggerStatus != null) {
-            paramMap.put("triggerStatus", triggerStatus.getStatus());
-        }
-        paramMap.put("jobDesc",jobQuery.getJobDesc());
-        paramMap.put("executorHandler",jobQuery.getExecutorHandler());
-        paramMap.put("author",jobQuery.getAuthor());
+        paramMap.put("triggerStatus", triggerStatus.getStatus() != null ? triggerStatus.getStatus() : TriggerStatusEnum.ALL);
+        paramMap.put("jobDesc",jobQuery.getJobDesc() != null ? jobQuery.getJobDesc() : "");
+        paramMap.put("executorHandler",jobQuery.getExecutorHandler() != null ? jobQuery.getExecutorHandler() : "");
+        paramMap.put("author",jobQuery.getAuthor() != null ? jobQuery.getAuthor() : "");
 
         HttpResponse response = httpRequest.form(paramMap).timeout(timeout).execute();
         int status = response.getStatus();
@@ -77,8 +76,8 @@ public class XxlJobServiceImpl implements XxlJobService {
         Map<String, Object> paramMap = new HashMap();
         paramMap.put("start",jobGroupQuery.getStart());
         paramMap.put("length",jobGroupQuery.getLength());
-        paramMap.put("appname",jobGroupQuery.getAppname());
-        paramMap.put("title",jobGroupQuery.getTitle());
+        paramMap.put("appname",jobGroupQuery.getAppname() != null ? jobGroupQuery.getAppname() : "");
+        paramMap.put("title",jobGroupQuery.getTitle() != null ? jobGroupQuery.getTitle() : "");
 
         HttpResponse response = httpRequest.form(paramMap).timeout(timeout).execute();
         int status = response.getStatus();
@@ -126,6 +125,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         jobGroupQuery.setStart(0);
         jobGroupQuery.setLength(1);
         jobGroupQuery.setAppname(appName);
+        jobGroupQuery.setTitle("");
         JobGroupPageResult jobGroupPageResult = this.pageList(jobGroupQuery);
         String errorMsgTemplate = "查询结果为空，请检查是否创建对应名称的执行器";
         Assert.notNull(jobGroupPageResult, errorMsgTemplate);
@@ -164,9 +164,8 @@ public class XxlJobServiceImpl implements XxlJobService {
     @Override
     public Integer add(XxlJobInfo jobInfo) {
         HttpRequest httpRequest = postHttpRequest(jobAddPath);
-        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
-        ReturnT<String> returnT = requestXxlJobAdmin(httpRequest, jsonObject, new TypeReference<ReturnT<String>>() {
-        });
+        JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
+        ReturnT<String> returnT = requestXxlJobAdmin(httpRequest, jsonObject, new TypeReference<>() {});
         return Integer.valueOf(returnT.getContent());
     }
 
@@ -248,7 +247,6 @@ public class XxlJobServiceImpl implements XxlJobService {
         if (glueType != null) {
             jobInfo.setGlueType(glueType);
         }
-
         BeanUtils.copyProperties(defaultXxlJobAddParam,jobInfo);
 
         Integer jobGroupId = this.getDefaultJobGroupId();
@@ -273,7 +271,7 @@ public class XxlJobServiceImpl implements XxlJobService {
     public void update(JobUpdateParam jobInfo) {
         HttpRequest httpRequest = postHttpRequest(jobUpdatePath);
 
-        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
+        JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(jobInfo));
         requestXxlJobAdmin(httpRequest, jsonObject,new TypeReference<ReturnT<String>>(){});
     }
 

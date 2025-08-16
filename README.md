@@ -1,4 +1,12 @@
+# 更新说明：2025-08-16
+
+1. 升级项目SpringBoot版本为3.0.2
+2. 升级项目SDK版本为17
+3. 升级项目依赖的xxl-job版本为3.1.1并适配
+4. 之后版本号和xxl-job版本号保持一致
+
 # 更新说明：2023-03-17
+
 1. 项目启动之前校验每一个配置参数，如果参数错误会终止项目启动，避免配置错误却不知道执行器启动失败
 2. 将accessToken校验提前到项目启动完成之前，避免accessToken配置错误但是项目还是启动成功影响业务
 3. 每个配置参数添加对应错误提示
@@ -14,6 +22,7 @@
 13. bug修复
 
 # 项目介绍
+
 1. 使用java代码控制xxl-job-admin。使用代码添加job的CRUD等功能
 2. 项目使用的xxl-job-admin版本为2.3.0
 3. 此项目版本号对应xxl-job-admin版本号
@@ -22,6 +31,7 @@
 6. 默认配置了XxlJobSpringExecutor，所以不用再额外配置此类交给Spring管理了
 
 下面是自动配置类，默认配置如下
+
 ```
 @Data
 @ConfigurationProperties(prefix = "xxl.job.sdk")
@@ -49,7 +59,9 @@ public class XxlJobAdminProperties {
 
 }
 ```
+
 # 使用方法
+
 ```
 <dependency>
     <groupId>com.lxgnb</groupId>
@@ -57,6 +69,7 @@ public class XxlJobAdminProperties {
     <version>2.3.0-jobinfo-executor-2</version>
 </dependency>
 ```
+
 1. pom文件中添加上面的依赖坐标（已上传到maven中央仓库）
 2. 添加配置项，配置参数如下
 3. <img width="510" alt="image" src="https://user-images.githubusercontent.com/18614347/225945079-beab4c11-3c83-4cba-b676-43c8d82b5f30.png">
@@ -64,25 +77,23 @@ public class XxlJobAdminProperties {
 5. <img width="337" alt="image" src="https://user-images.githubusercontent.com/18614347/155742249-49778cf5-b6e8-4317-9020-78df46b023fc.png">
 
 ## 添加job
-1. 添加任务有四个方法，对应的参数个数不一样，截图如下
-3. ![image](https://user-images.githubusercontent.com/18614347/226236154-0cff3bfa-c997-4d3a-b5c0-3aa898556547.png)
-4. XxlJobInfo 这是参数最全的类，官方有哪些参数，这个类就有哪些字段
-5. XxlJobInfoAddParam 这个是必填参数，其它参数和在网页上添加任务的默认参数一样
-6. DefaultXxlJobAddParam 这个和 XxlJobInfoAddParam差不多，区别在于默认参数这个类也有字段，可以修改，XxlJobInfoAddParam就只有必填参数，不能修改默认参数
-7. addJustExecuteOnceJob是2.3.0-jobinfo-executor-2新增的方法，因为很多业务只需要执行一次，为了方便添加此类业务，新增了此方法，并且还有和此配套的getJobIdByCustomId方法，方便对此任务进行修改或者删除
-8. 之所以提供三个方法来添加任务是为了方便添加任务，不用每个参数都去设置
 
+1. 添加任务有四个方法，对应的参数个数不一样，截图如下
+2. ![image](https://user-images.githubusercontent.com/18614347/226236154-0cff3bfa-c997-4d3a-b5c0-3aa898556547.png)
+3. XxlJobInfo 这是参数最全的类，官方有哪些参数，这个类就有哪些字段
+4. XxlJobInfoAddParam 这个是必填参数，其它参数和在网页上添加任务的默认参数一样
+5. DefaultXxlJobAddParam 这个和 XxlJobInfoAddParam差不多，区别在于默认参数这个类也有字段，可以修改，XxlJobInfoAddParam就只有必填参数，不能修改默认参数
+6. addJustExecuteOnceJob是2.3.0-jobinfo-executor-2新增的方法，因为很多业务只需要执行一次，为了方便添加此类业务，新增了此方法，并且还有和此配套的getJobIdByCustomId方法，方便对此任务进行修改或者删除
+7. 之所以提供三个方法来添加任务是为了方便添加任务，不用每个参数都去设置
 
 使用方法就是这样，后续看项目情况也许会接入其它接口。
 如果大家有什么问题，欢迎大家提出来。这个项目写的很粗糙，大家有什么意见和建议，非常欢迎大家来交流。谢谢
 
 ## 微信群
+
 ![image](https://user-images.githubusercontent.com/18614347/226236677-24f4fe3d-cfd8-49cf-9015-4f4d636113e6.png)
 
-
-
-
 ## QQ群
+
 点击链接加入群聊【xxl-job-boot-starter】：https://jq.qq.com/?_wv=1027&k=7T9xX7XY
 群号：709425770
-

@@ -1,8 +1,9 @@
 package com.xiaogang.xxljobadminsdk.vo;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
-import lombok.Data;
 
 public @Data class JobInfoPageResult implements Serializable {
 	private static final long serialVersionUID = 1316450425048690593L;

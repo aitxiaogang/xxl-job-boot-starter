@@ -4,6 +4,7 @@
 2. 升级项目JDK版本为17
 3. 升级项目依赖的xxl-job版本为3.1.1并适配
 4. 之后版本号和xxl-job版本号保持一致
+5. 新版本还未上传maven中央仓库，暂时需要本地打包
 
 # 关于文档
 1. 此项目比较简单，所有的功能都在XxlJobService接口类里面，方法声明有注释，一看就明白作用。类路径：src/main/java/com/xiaogang/xxljobadminsdk/service/XxlJobService.java
